@@ -1,0 +1,5 @@
+content seleniumbuilder3 content/
+
+overlay chrome://browser/content/browser.xul chrome://seleniumbuilder3/content/browser-overlay.xul
+
+locale seleniumbuilder3 en-US locale/en-US/
