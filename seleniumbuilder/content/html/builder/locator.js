@@ -64,6 +64,8 @@ builder.locator.locateElementByXpath = function(window, xpath) {
   if (!window.document.evaluate) {
     install(window);
   }
+  // Why 7 as a parameter? No one knows. It's what http://coderepos.org/share/wiki/JavaScript-XPath uses.
+  // And there's no docs, only a handful of examples. Sigh. But this *seems* to work. qqDPS
   var el = window.document.evaluate(xpath, window.document, null, 7, null);
   return el.snapshotItem(0) ? el.snapshotItem(0) : null;
 };
@@ -149,26 +151,13 @@ builder.locator.prevHighlightOriginalStyle = null;
 
 builder.locator.deHighlight = function(callback) {
   if (!builder.locator.prevHighlightMethod) { callback(); return; }
-  if (builder.getScript().seleniumVersion == builder.selenium1) {
-    var win = window.bridge.getRecordingWindow();
-    var node = builder.locator.locateElement(win, builder.locator.prevHighlightMethod, builder.locator.prevHighlightValue);
-    if (node) {
-      node.style.border = builder.locator.prevHighlightOriginalStyle;
-    }
-    builder.locator.prevHighlightMethod = null;
-    callback();
-  } else {
-    function done() {
-      builder.selenium2.playback.shutdown();
-      builder.locator.prevHighlightMethod = null;
-      callback();
-    }
-    builder.selenium2.playback.startSession(function() {
-      builder.selenium2.playback.execute('findElement', {using: builder.locator.prevHighlightMethod[builder.selenium2], value: builder.locator.prevHighlightValue}, function(result) {
-        builder.selenium2.playback.execute('executeScript', { 'script': "arguments[0].setAttribute('style', '" + builder.locator.prevHighlightOriginalStyle + "');", 'args': [result.value] }, done, done);
-      }, done);
-    });
+  var win = window.bridge.getRecordingWindow();
+  var node = builder.locator.locateElement(win, builder.locator.prevHighlightMethod, builder.locator.prevHighlightValue);
+  if (node) {
+    node.style.border = builder.locator.prevHighlightOriginalStyle;
   }
+  builder.locator.prevHighlightMethod = null;
+  callback();
 };
 
 builder.locator.highlight = function(method, value) {
@@ -176,22 +165,11 @@ builder.locator.highlight = function(method, value) {
   builder.locator.deHighlight(function() {
     builder.locator.prevHighlightMethod = method;
     builder.locator.prevHighlightValue = value;
-    if (builder.getScript().seleniumVersion == builder.selenium1) {
-      var win = window.bridge.getRecordingWindow();
-      var node = builder.locator.locateElement(win, method, value);
-      if (node) {
-        builder.locator.prevHighlightOriginalStyle = node.style.border;
-        node.style.border = "2px solid red";
-      }
-    } else {
-      builder.selenium2.playback.startSession(function() {
-        builder.selenium2.playback.execute('findElement', {using: method[builder.selenium2], value: value}, function(result) {
-          builder.selenium2.playback.execute('getElementAttribute', {id: result.value.ELEMENT, name: 'style'}, function(result2) {
-            builder.locator.prevHighlightOriginalStyle = result2.value;
-            builder.selenium2.playback.execute('executeScript', { 'script': "arguments[0].setAttribute('style', 'border: 2px solid red;');", 'args': [result.value] }, builder.selenium2.playback.shutdown(), builder.selenium2.playback.shutdown);
-          }, builder.selenium2.playback.shutdown);
-        }, builder.selenium2.playback.shutdown);
-      });
+    var win = window.bridge.getRecordingWindow();
+    var node = builder.locator.locateElement(win, method, value);
+    if (node) {
+      builder.locator.prevHighlightOriginalStyle = node.style.border;
+      node.style.border = "2px solid red";
     }
   });
 };

@@ -70,9 +70,9 @@ builder.io.loadFile = function(path) {
   var file = null;
   if (!path) {
     file = bridge.showFilePicker(window, _t('select_a_file'), 
-                          Components.interfaces.nsIFilePicker.modeOpen,
-                          bridge.Format.TEST_CASE_DIRECTORY_PREF,
-                          function(fp) { return fp.file; });
+        Components.interfaces.nsIFilePicker.modeOpen,
+        "extensions.seleniumbuilder3.loadSavePath",
+        function(fp) { return fp.file; });
   } else {
     file = bridge.SeFileUtils.getFile(path);
   }
