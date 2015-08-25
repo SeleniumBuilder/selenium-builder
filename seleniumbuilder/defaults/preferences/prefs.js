@@ -1,0 +1,17 @@
+pref("extensions.seleniumbuilder3.recorderurl", "chrome://seleniumbuilder3/content/html/");
+pref("extensions.seleniumbuilder3.domainname", "(none)");
+pref("extensions.seleniumbuilder3.rc.hostport", "localhost:4444");
+pref("extensions.seleniumbuilder3.rc.browserstring", "*chrome");
+pref("extensions.seleniumbuilder3.remote.hostport", "localhost:4444");
+pref("extensions.seleniumbuilder3.remote.browserstring", "firefox");
+pref("extensions.seleniumbuilder3.remote.browserversion", "");
+pref("extensions.seleniumbuilder3.remote.platform", "");
+pref("extensions.seleniumbuilder3.extensions", "");
+pref("extensions.seleniumbuilder3.plugins.repository", "http://www.sebuilder.com/repository3.json");
+pref("extensions.seleniumbuilder3.plugins.bundledPluginsInstalled", false);
+pref("extensions.seleniumbuilder3.plugins.gotoPluginsView", false);
+pref("extensions.seleniumbuilder3.shareSuiteState", false);
+pref("extensions.seleniumbuilder3.doRecordMouseovers", false);
+pref("extensions.seleniumbuilder3.loadSavePath", "");
+pref("extensions.seleniumbuilder3.getAddons.cache.enabled", false);
+pref("extensions.seleniumbuilder@sebuilder.com.getAddons.cache.enabled", false);

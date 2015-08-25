@@ -1,0 +1,725 @@
+body, html, ul {
+  font-size: 8pt;
+  margin: 0px;
+  padding: 0px;
+  text-align: left;
+  font-family: "Lucida Grande" ,"SegoeUI", sans-serif;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  box-model:border-box;
+}
+
+html {
+  background-color:      rgb(126, 126, 126);
+  background-image:      url(../img/background-gradient-light.png);
+  background-attachment: fixed;
+  background-position:   bottom right;
+  background-repeat:     repeat-x;
+}
+
+table {
+  font-size: 100%;
+}
+
+/** Lists */
+ul {
+  list-style: none;
+}
+
+/** Links */
+a {
+  text-decoration: none;
+  color: rgb(96, 120, 67);
+  cursor: pointer; /* Fix up <a>s without a href. */
+}
+
+a:hover {
+  color: rgb(143, 179, 100);
+  text-decoration: underline;
+}
+
+img {
+  border: none;
+}
+
+/** Logo */
+#header-logo {
+  position: fixed;
+  bottom:   1ex;
+  left:     1ex;
+  display:  block;
+}
+
+/**
+ * Buttons:
+ * The buttons use css to give a rounded border, and a background image for the gradient.
+ * In the case of older browsers, they ignore the rounded corners, but do pick up the gradient, so
+ * all is still well in the world.
+ */
+input.button,
+input:hover.button,
+input:active.button,
+a:hover.button,
+a:active.button,
+a.button {
+  display:inline-block;
+  box-model:border-box;
+  border: 1px solid rgb(168,168,168);
+  border-bottom: 1px solid rgb(96,96,96);
+  border-right: 1px solid rgb(128,128,128);
+  font: 500 1.3rem/1.6rem lucida grande, segoeUI ;
+  display:inline-block;
+  padding:0.2rem 0.5rem;
+  color:rgb(64,64,64);
+  /*margin: 0.5rex 0.5rex 0.5rex 0.5rex;*/
+  margin: 0px 3px 6px 0px;
+  min-width:  5rem;
+  min-height:1rem;
+  text-align:center;
+  background-image: url(../img/button-gradient.png);
+  background-repeat:repeat-x;
+  background-position:right top;
+  text-decoration: none;
+  border-radius:0.2rem;
+}
+
+input:hover.button,
+a:hover.button
+{
+  border: 1px solid rgb(96,120,67);
+  /*border-bottom: 1px solid rgb(64,64,64);
+  border-right: 1px solid rgb(64,64,64);*/
+  background-color: rgb(242,255,226);
+  color:rgb(0,0,64) !important;
+}
+input:active.button,
+a:active.button
+{
+  border: 1px solid rgb(128,128,128);
+  border-bottom: 1px solid rgb(96,96,96);
+  box-shadow: inset   2px 2px 7px rgba(50, 50, 50, 0.75);
+  background-color: rgb(215,215,215);
+  color:rgb(0,0,0) !important;
+}
+
+span a:first-child.button,
+div a:first-child.button
+{
+  border-top-left-radius:0.4ex;
+  border-bottom-left-radius:0.4ex;
+}
+
+span a:last-child,
+div a:last-child
+{
+  border-top-right-radius:0.4ex;
+  border-bottom-right-radius:0.4ex;
+  border-right-width:1px;
+}
+
+.back:before {
+  content: "\ab  ";
+}
+
+/** Boot */
+#loadMessage, #booting-file {
+  color: white;
+  margin-left: 100px;
+}
+
+#loadMessage {
+  margin-top: 100px;
+}
+
+#booting-progress {
+  margin-left: 100px;
+  margin-top: 5px;
+}
+
+#booting-done {
+  width: 200px;
+  height: 6px;
+  background: #bbbbbb;
+  display: none;
+  border: 1px solid white;
+  border-right: none;
+}
+
+#booting-notdone {
+  width: 0px;
+  height: 6px;
+  background: #333333;
+  position: relative;
+  top: -8px;
+  left: 201px;
+  display: none;
+  border: 1px solid white;
+  border-left: none;
+}
+
+/** Menu */
+#menu *, #menu{
+  box-sizing: border-box;
+}
+
+#menu {
+  font:           1rem/1.2rem "Lucida Grande" ,"SegoeUI", sans-serif;
+  background:     rgb(240,240,240) url(../img/button-gradient.png) repeat-x;
+  color:          rgb(96,96,96);
+  position:       fixed;
+  top:            4px;
+  left:           4px;
+  right:          4px;
+  z-index:        30;
+  border:         1px solid rgb(96,96,96);
+  border-bottom:  1px solid rgb(32,32,32);
+  box-shadow:     0px 1px 2px rgba(50, 50, 50, 0.6);
+  border-radius:  0.2rem;
+  margin:         0;
+  padding:        0;
+}
+
+#menu li
+{
+  float:         left;
+  display:       block;
+  position:      relative;
+  cursor:        pointer;
+}
+
+#menu  li ul
+{
+  top:               100%;
+  left:              0px;
+  padding:           5px 0px;
+  position:          absolute;
+  background-color:  rgb(240,240,240);
+  border:            1px solid rgb(200,200,200);
+  height:            auto;
+  display:           none;
+  box-shadow:        2px 2px 7px rgba(50, 50, 50, 0.75);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px
+  border-bottom-left-radius: 5px;
+  width:             auto;
+  overflow-x:        hidden;
+  overflow-y:        auto;
+  max-height:        450px;
+}
+
+#menu li:hover ul {
+  display:            block;
+  z-index:            5;
+}
+
+#menu li ul li {
+  display:           block;
+  position:          static;
+  min-width:         15em;
+  float:             none;
+}
+
+#menu ul {
+  height:            2.2em;
+  background-color:  rgb(255,255,255);
+  border-bottom:     1px solid rgb(0,0,0);
+  padding-left:      6em;
+}
+
+#menu li a {
+  color:           rgb(64,64,64);
+  text-decoration: none;
+  padding:         1ex 2ex;
+  display:         block;
+}
+
+#menu li:hover a, #menu li:hover ul li a:hover {
+  color:  rgb(0,0,96);
+  border: 0;
+}
+
+#menu li:hover {
+  background-color: rgba(255,255,255,0.5);
+  z-index: 200;
+}
+
+#menu div.divider {
+  width: 100%;
+  height: 1px;
+  background: rgb(128,128,128);
+}
+
+.menu-reorder {
+  display: block;
+  width: 20px;
+  height: 14px;
+  float: left;
+  position: relative;
+}
+
+.menu-up {
+  display: block;
+  width: 11px;
+  height: 9px;
+  background: url('../img/up.png');
+  cursor: pointer;
+  position: relative;
+  top: 2px;
+  left: 3px;
+}
+
+.menu-up:hover {
+  background: url('../img/up_hover.png');
+}
+
+.menu-down {
+  display: block;
+  width: 11px;
+  height: 9px;
+  background: url('../img/down.png');
+  cursor: pointer;
+  position: relative;
+  top: 5px;
+  left: 3px;
+}
+
+.menu-down:hover {
+  background: url('../img/down_hover.png');
+}
+
+/** Windows and dialogs */
+#steplist, #startup, #plugins {
+  counter-reset: line-number;
+  margin-top: 40px;
+  margin-left: 80px;
+  margin-right:1em;
+  display:block;
+  min-height:100%;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 1em;
+  padding-bottom:1em;
+  background: white;
+  border-left:1px solid rgb(32,32,32);
+  border-bottom:1px solid rgb(32,32,32);
+  box-model:border-box;
+  box-shadow: -.1em 0em 1em rgba(0,0,0,0.5), inset 0 0 2rem rgba(0,0,0,0.1);
+}
+
+.highlightedMenuItem {
+  font-weight: bold;
+}
+
+.disabledMenuItem{
+  color: #666666 !important;
+}
+
+/** Plugins */
+#plugins-list {
+  display: block;
+  overflow: auto;
+  height: 300px;
+}
+
+#plugins-list li {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-top: 0.5em;
+  padding-bottom:0.25em;
+  border: 1px solid rgb(128,128,128);
+  box-model:border-box;
+  box-shadow: -.02em 0em 0.2em rgba(0,0,0,0.5), inset 0 0 2rem rgba(0,0,0,0.1);
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+
+#plugins-list .pluginHeader {
+  margin-bottom: 0.5em;
+}
+
+#plugins-list .pluginDescription {
+  margin-bottom: 0.5em;
+}
+
+#plugins-list .installed {
+  background: rgb(242, 255, 226);
+}
+
+#plugins-list .disabled {
+  background: rgb(220, 220, 220);
+}
+
+#plugins-list .not_installed {
+  background: white;
+}
+
+#plugins-list .pluginName {
+  font-weight: bold;
+}
+
+#plugins-list .pluginStatus:before {
+  content: " ";
+}
+
+#plugins-list .pluginStatus {
+  color: #666666;
+}
+
+#plugins-list .pluginIcon {
+  float: left;
+}
+
+#plugins-list .pluginInfo {
+  margin-left: 62px;
+}
+
+/** Startup */
+.cookie-warning {
+  color: #aa0000;
+}
+
+#startup * {
+  box-model:border-box;
+}
+
+h1 {
+  color: rgb(64, 64, 64);
+  margin: 0px;
+  margin-bottom: 3px;
+}
+
+#startup ul {
+  border-top:1px solid  rgba(0,0,0,0.3);
+  padding:0;
+  margin:0;
+  list-style:none;
+  padding: 0;
+}
+
+#startup li a:before {
+  content: "\bb  ";
+}
+
+#startup li, .startrecording {
+  font: 500 1.3rem/1.6rem lucida grande, segoeUI ;
+  margin:0;
+}
+
+#startup li {
+  padding:0.5rem 3rem;
+  border-bottom:1px dotted rgb(128, 128, 128);
+}
+.startrecording {
+  padding:0.5rem 4.15rem;
+}
+#startup li:hover {
+  background-color:rgb(242, 255, 226);
+}
+#startup li a {
+  display: block;
+  color: black;
+}
+#startup li:hover a {
+  text-decoration: none;
+}
+#startup form {
+  display: inline;
+}
+
+
+/** Dialogs */
+#dialog-attachment-point {
+  position: fixed;
+  z-index:5;
+  top:1em;
+  right:2em;
+  height: 100%;
+  overflow: auto;
+}
+
+.dialog {
+  background-color: rgba(255,255,255,0.9);
+  border: 1px solid rgb(210,210,210);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.5rem rgba(0,0,0,0.3) ;
+  padding: 1rem;
+  padding-top: 3rem;
+}
+
+.dialog form ul {
+  min-width: 20em;
+  padding: 1rem;
+  margin:1rem;
+  width:100%;
+}
+
+
+/** Steps */
+texta {
+  width:100%;
+}
+
+#steps-top {
+  position:relative;
+}
+
+#steps-footer {
+  height: 1rem;
+  background-color:rgb(250, 250, 250);
+}
+
+.b-step {
+  position: relative;
+}
+
+.b-step-content, .b-baseurl {
+  border-top: 1px dotted rgb(128,128,128);
+  padding: 0.3rem 0.1rem;
+}
+
+.b-recording-insertion-point-top {
+  border-top: 1px dashed rgb(200, 90, 90);
+}
+
+.b-recording-insertion-point-bottom {
+  border-bottom: 1px dashed rgb(200, 90, 90);
+}
+
+.b-step-container {
+  padding-left: 28px;
+}
+
+/* Compensate for b-baseurl not being wrapped in b-step and its label being wider. */
+.b-baseurl {
+  margin: 2px;
+  margin-left: 102px;
+}
+
+.b-burger {
+  display: block;
+  position: absolute;
+  left: 15px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  background: url('../img/menuburger.png');
+  cursor: pointer;
+}
+
+.b-burger:hover {
+  background: url('../img/menuburger_hover.png');
+}
+
+.b-step-breakpoint {
+  display: block;
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  cursor: pointer;
+}
+
+.b-step-breakpoint:hover {
+  background: #ffbbbb;
+  border: 1px solid #ff9999;
+}
+
+.b-step-breakpoint-disabled {
+  background: #999999;
+  border-color: #555555;
+}
+
+.b-step-breakpoint-set {
+  background: red;
+  border: 1px solid #880000;
+}
+
+.b-step-name {
+  color: rgb(90,90,90);
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.b-step-name:hover {
+  color: black;
+}
+
+.b-method {
+  color: black;
+  margin-right: 0.5em;
+  font-weight: bold;
+  position:relative;
+}
+
+.b-param-row {
+  display: block;
+}
+
+.b-param-type {
+  margin-right: 0.5em;
+  color: rgb(50, 50, 50);
+  text-decoration:underline;
+}
+
+.b-param {
+  color: rgb(50, 50, 50);
+}
+
+.b-param-input {
+  width: 20em;
+}
+
+.b-param-input {
+  margin-top: -5px;
+  margin-bottom: -5px;
+}
+
+.b-method:hover, .b-param:hover, .b-param-type:hover {
+  text-decoration: none;
+  color: rgb(96, 120, 67);
+}
+
+.b-step-error, .b-step-warning, .b-step-message {
+  display: block;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.b-alt-locators {
+  margin-top: 10px;
+}
+
+/** Tasks */
+.b-step .b-tasks {
+  display: none;
+}
+
+.b-step .b-tasks-appear {
+  background-color:white;
+  padding: 3px;
+  border-radius: 5px;
+  border:1px solid black;
+  box-shadow: 0.2rem 0.2rem 1rem rgba(0,0,0,0.5);
+  display: block;
+  position: absolute;
+  top: 0rem;
+  margin:0rem;
+  margin-top:-0.5rem;
+  padding-bottom:1rem;
+  left:-86px;/* into the grey space*/
+  z-index: 1000;
+  width:91px;
+  box-model:border-box;
+}
+
+.b-step:hover {
+  /*background-color: rgb(242, 255, 226);*/ /* qqDPS Can't get this to work with recoloring the steps. */
+  border-radius: .2rem;
+}
+
+.b-step-note {
+  margin-top: 2px;
+  padding: 2px;
+  color: #555555;
+  background-color: #ffffaa;
+}
+
+.b-tasks .b-task {
+  display: block;
+  padding: 2px;
+}
+
+/** Type chooser */
+table.cat-table {
+  background-color: #eeeeee;
+  padding: 5px;
+  margin: 2px;
+  font-size: 100%;
+}
+
+table.cat-table td {
+  vertical-align: top;
+}
+
+table.cat-table li {
+  list-style: none;
+  white-space: nowrap;
+}
+
+.selected-cat {
+  font-weight: bold;
+}
+
+.selected-type {
+  font-weight: bold;
+}
+
+.cat-list {
+  margin: 0px;
+  padding: 0px;
+  padding-right: 5px;
+  margin-right: 5px;
+  width: 100px;
+  overflow-x: hidden;
+  border-right: 1px solid rgb(128, 128, 128);
+}
+
+.cat-list li {
+  border-bottom:1px dotted rgb(128, 128, 128);
+}
+
+.type-list {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 10px;
+  width: 100px;
+  overflow: hidden;
+}
+
+.type-info {
+  background-color: white;
+  border: 1px solid #aaaaaa;
+  margin: 0px;
+  padding: 3px;
+  width: 160px;
+}
+
+.type-info-head {
+  font-weight: bold;
+}
+
+.type-info-longparam {
+  margin: 5px;
+}
+
+table.cat-table .type-info-longparam li {
+  white-space: normal;
+}
+
+#record-spinner {
+  float: right;
+}
+
+.updates-available {
+  font-size: 70%;
+  margin-left: 1.5em;
+  color: rgb(96, 120, 67);
+}
+
+.selenium-version-display {
+  float: right;
+  color: #666666;
+}
+
+a.smallbutton {
+  padding: 0.2rem 0.2rem !important;
+  min-width: 1.5rem !important;
+}
+
+.runslist {
+  width:             auto;
+  overflow-x:        hidden;
+  overflow-y:        auto;
+  max-height:        400px;
+}

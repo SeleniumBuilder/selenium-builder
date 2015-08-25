@@ -1,0 +1,655 @@
+body, html
+{  
+  font-size: 10px;
+  margin: 0px;
+  padding: 0px;
+  text-align: left;
+  font-family:Verdana, Helvetica, Arial, sans-serif;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0; 
+  width:100%;
+  height:100%;
+  position:absolute;
+  color: #111111;
+}
+a               {text-decoration:none; color:#66AA66;}
+a:hover         {color:#88bb88; text-decoration:underline;}
+
+img {
+  border:none;
+}
+
+.suite {
+  /*border-bottom:1px solid black;*/
+  position:relative;
+}
+
+.suiteHeader {
+  width:99%;
+  table-layout: fixed;
+}
+
+.suiteTitleDiv {
+  /*cursor:pointer;*/
+  width:215px;
+}
+
+.suiteButton {
+  padding-left:4px;
+  padding-right:4px;
+}
+
+.action, .baseurl {
+  position:relative;
+  padding:2px;
+  margin:1px;
+  background: #dddddd;
+  border: 1px solid #aaaaaa;
+  -moz-border-radius: 5px;
+}
+
+.action img {
+  width:23px;
+  height:23px;
+}
+
+.tabHead {
+  font-size:12px;
+}
+
+.buttons {
+ position:absolute;
+ right:15px;
+ top:0px;
+}
+
+.moreLink {
+  text-decoration: underline;
+  font-size:9px;
+  position:absolute;
+  right:20px;
+}
+.lessLink {
+  text-decoration: underline;
+  font-size:9px;
+  position:absolute;
+  right:20px;
+}
+
+.texta {
+  SCROLLBAR-BASE-COLOR: #fffffff;
+  SCROLLBAR-ARROW-COLOR: #666666;
+  border-top-width : 1px;
+  border-right-width : 1px;
+  border-bottom-width : 1px;
+  border-left-width : 1px;
+  border:1px solid lightgray;
+  margin-top:1px;
+  margin-left:2px;
+  padding:2px;
+  width: 75%;
+}
+
+.smalloption {
+  height:19px;
+  margin-bottom:1px;
+  margin-top:1px;
+  border:1px solid lightgray;
+}
+
+.floatLeft {
+  float:left;
+}
+.floatRight {
+  float:right;
+}
+.clearBoth {
+  clear:both;
+  font-size: 0px;
+  height: 0px;
+  line-height:0px;
+}
+
+#cover {
+ width:100%;
+ height:100%;
+ background-color:white;
+ opacity:.8;
+ filter: alpha(opacity=80);
+ z-index:5;
+ position:absolute;
+ left:0px;
+ top:0px;
+ padding:0px;
+ margin:0px;
+}
+
+#icon {
+  position:absolute;
+  top: -5px;
+  left: 0px;
+  border: 0px;
+}
+#statusMessage {
+  position:absolute;top:40%;left:20%
+}
+
+#runningStatus {
+ width:85%;
+ height:18px;
+ font-size:12px;
+ color:#456068; 
+ z-index:10;
+ position:relative;
+}
+
+#controllers {
+ z-index:1;
+ position:absolute;
+ top:44px;
+ right:5px;
+}
+
+#domExp {
+ display:none;
+ position:absolute;
+ background:white;
+ left:50px;
+ top:60px;
+ width:100%;
+ z-index:100;
+ font-size:15px;
+ color:#3f6d75;
+ border:1px solid #aaa; 
+}
+
+#ideForm {
+  position:relative;
+  width:100%;
+}
+
+#resOut {
+  position:relative;
+  width:100%;
+}
+#perfOut {
+  position:relative;
+  width:100%;
+}
+
+.outputEntry {
+    position: relative;
+    padding: 3px;
+    border-bottom: 1px solid #aaa;
+    width: 98%;
+    cursor:pointer;
+}
+
+#navigation {
+ padding:8px;
+ height:10px;
+ bottom:5px;
+ font-size:11px;
+ background:white;
+ left:10%;
+}
+
+.tab {
+ height:100%;
+}
+
+#tooltip {
+  position: absolute;
+  z-index: 3000;
+  border: 1px solid #111;
+  background-color: #eee;
+  padding: 5px;
+  opacity: 0.85;
+}
+#tooltip h3, #tooltip div { margin: 0; }
+
+ul#icons {
+  margin:0;
+  padding:0;
+}
+ul#icons li {
+  cursor:pointer;
+  float:left;
+  list-style-image:none;
+  list-style-position:outside;
+  list-style-type:none;
+  margin:2px;
+  padding:5px 5px;
+  position:relative;
+}
+ul#icons span.ui-icon {
+  float:left;
+  margin:0 4px;
+}
+
+ul#btns {
+  margin:0;
+  padding:0;
+}
+ul#btns li {
+  cursor:pointer;
+  float:left;
+  list-style-image:none;
+  list-style-position:outside;
+  list-style-type:none;
+  margin:2px;
+  padding:2px 0;
+  position:relative;
+}
+ul#btns span.ui-icon {
+  float:left;
+  margin:0 4px;
+}
+
+#fileBrowser h2, #fileBrowser b {
+    cursor: pointer;
+}
+
+.error {
+    color: red; 
+}
+
+.step-error {
+  font-weight: bold;
+}
+
+.step-view {
+  float: right;
+  margin-right: 10px;
+}
+
+.centered {
+    display:block;
+    text-align: center;
+}
+
+/** Selenium Builder interface **/
+.record-button {
+    white-space: nowrap;
+}
+#loading {
+    background-color: #333333;
+    color: white;
+    font-weight: bold;
+    position: absolute;
+    right: 0px;
+    font-size: 1.2em;
+    padding: 3px;
+    z-index: 10000;
+}
+#heading {
+    height: 80px;
+    color: #333333;
+    background: transparent url(../img/selenium-header.png) repeat-x scroll 0 0;
+    background-color: #dddddd;
+}
+
+#heading div {
+    display: block;
+    position: absolute;
+    font-size: 120%;
+    top: 0px;
+    right: 0px;
+    left: 120px; /* width of logo- ? */
+    height: 80px; /* #container top */
+    padding-right: 5px;
+    padding-top: 2px;
+}
+
+#heading a {
+    color: inherit;
+}
+#heading a:hover {
+    color: #DDFF88;
+}
+
+#container {
+    position: absolute;
+    top: 75px; /* #heading div height */
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
+    overflow: auto;
+    background: white;
+}
+/** login dialog **/
+#login h2 {
+    font-size: 130%;
+}
+#login label {
+    width: 7em;
+    display: inline-block;
+    text-align: right;
+}
+#login label[for=login-remember] {
+    text-align: right;
+    width: 12em;
+}
+#login-remember {
+    position: relative;
+    top: 4px;
+}
+#login label:after {
+    content: ":"
+}
+#login input[type="submit"] {
+    display: inline-block;
+    margin-left: 7em;
+}
+#login a {
+    margin-left: 4ex;
+}
+#login-failed {
+    color: white;
+    font-weight: bold;
+    margin-left: -10px;
+    background-color: #AA0000;
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+
+/** startup dialog **/
+#startup {
+    font-size: 120%;
+}
+
+#startup-filebrowser h2 {
+    font-size: 100%;
+}
+
+#heading-startup {
+    text-align: right;
+}
+
+/** recording window **/
+#record-url-display {
+    display: block;
+    font-size: 90%; /* allow three slightly narrow lines for the URL - they are huge! */
+    line-height: 1.1em; 
+    height: 3.3em;
+    padding-top: auto;
+    overflow: hidden;
+}
+
+#record-bottom, #edit-bottom, #play-bottom, #edit-export-ui, #edit-suite {
+    margin-top: 5px;
+    font-size: 1.2em;
+    border: none;
+    background: none;
+    border-top: 1px solid #DDD;
+}
+
+#record-bottom .centered, #edit-bottom .centered, #play-bottom .centered, #edit-suite .centered {
+    line-height: 2.4em;
+}
+
+#record-spinner {
+    float: left;
+    margin-top: 6px;
+    margin-right: 5px;
+}
+
+.record-button {
+    padding: 3px 5px;
+    margin: 0px 5px;
+    border: 1px solid #333333;
+}
+
+#heading-record .when-on {
+    font-size: 20px;
+}
+
+/** toggles **/
+
+.when-on {
+    display: none;
+}
+.is-on > .when-on {
+    display: inline;
+}
+.is-on > .when-off {
+    display: none;
+}
+/** Try to get CSS numbers on divs in ideform */
+
+#ideForm, #play-test {
+    counter-reset: line-number;
+}
+
+/** Method editor **/
+.method-dialog {
+    display: block;
+    vertical-align: text-top;
+    width: auto;
+    overflow: hidden;
+    margin: 5px;
+}
+.method-dialog .tab-bar {
+    border-bottom: 1px dashed #CCCCCC;
+    vertical-align: middle;
+    width: 100%;
+    margin-bottom: 2px;
+}
+.method-dialog .select-helper + .select-helper {
+    margin-left: 10px;
+}
+.method-dialog .tab-container {
+    margin-bottom: 2px;
+}
+.method-dialog .tab-bar input {
+    position: relative;
+    top: 2px;
+    margin-left: 10px;
+}
+.method-dialog .help {
+    margin-top: 5px;
+}
+.method-dialog .tab-container div {
+    float: left;
+}
+.method-dialog .tab-container .method-select {
+    margin-left: 10px;
+}
+.method-dialog #after-filter, .method-dialog #before-filter {
+    clear: both;
+    font-size: 1.2em;
+    margin-bottom: 2px;
+}
+#after-filter input, #before-filter input {
+    position: relative;
+    top: 3px;
+}
+#before-filter.disabled {
+    opacity: 1;
+}
+
+#new-method {
+    width: 26em; /* enough room for "waitForNotWhetherThisWindowMatchWindowExpression" */
+}
+
+#method-dialog-help {
+    clear: both;
+    line-height: normal;
+    margin: 5px;
+    background-color: white;
+    padding: 10px;
+}
+
+.url-warning {
+  color: #aa0000;
+}
+
+.cookie-warning {
+  color: #aa0000;
+  font-size: 10px;
+}
+
+/** locator dialog **/
+.find-new {
+    float: right;
+    margin-right: 3em;
+}
+
+.locator-dialog .warning, .locator-dialog ul {
+    line-height: normal;
+}
+
+
+/** Remove scroll-bar from selects **/
+.select-helper {
+    overflow: hidden;
+    border: 1px solid lightgrey;
+    /* width: set by javascript to the same as the width of an option at display time */
+}
+.select-helper select {
+    overflow: hidden;
+    border: none;
+    padding: 0px;
+}
+
+.method-dialog .select-helper {
+    float: left;
+}
+
+.method-dialog .category-select option {
+    width: 120px;
+}
+
+/** buttons **/
+
+.ui-state-default:hover {
+    color: #333;
+    border-color: #999;
+    text-decoration: none; 
+}
+.ui-state-disabled {
+    color: #333 !important;
+}
+.ui-state-disabled:hover {
+    border-color: #D3D3D3;
+}
+
+#booting.error {
+    color: red;
+}
+
+/** suite **/
+div.scriptselector {
+  padding: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #ffffff;
+  background: transparent url(../img/selenium-header.png) repeat-x scroll 0 0;
+  margin-bottom: 5px;
+}
+
+div.scriptselector select {
+  width: 100%;
+  font-size: 120%;
+}
+
+/**
+New step styling.
+**/
+
+.b-step {
+  position: relative;
+  padding: 2px;
+}
+
+.b-step-content, .b-baseurl {
+  background: #dddddd;
+  -moz-border-radius: 5px;
+  margin-left: 90px;
+  padding: 1px;
+  font-size: 120%;
+}
+
+.b-step-container {
+  padding-left: 1.5em;
+}
+
+/* Compensate for b-baseurl not being wrapped in b-step and its label being wider. */
+.b-baseurl {
+  margin: 2px;
+  margin-left: 92px;
+}
+
+.b-step-number:before {
+  position: absolute;
+  left: 94px;
+  content: counter(line-number) ". ";
+  counter-increment: line-number;
+  color: #555555;
+}
+
+.b-method {
+  color: black;
+  margin-right: 0.5em;
+  font-weight: bold;
+}
+
+.b-param-row {
+  display: block;
+}
+
+.b-param-type {
+  margin-right: 0.5em;
+  color: #555555;
+}
+
+.b-param {
+  color: black;
+}
+
+.b-param-input {
+  width: 20em;
+}
+
+.b-param-input {
+  margin-top: -5px;
+  margin-bottom: -5px;
+}
+
+.b-method:hover, .b-param:hover, .b-param-type:hover {
+  text-decoration: none;
+}
+
+.b-step-error, .b-step-warning {
+  display: block;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.b-alt-locators {
+  margin-top: 10px;
+}
+
+/** Tasks */
+.b-step .b-tasks {
+  display: none;
+}
+
+.b-step:hover .b-tasks {
+  background-color: #eeeeee;
+  padding: 3px;
+  -moz-border-radius: 5px;
+  display: block;
+  position: absolute;
+  top: 2px;
+  left: 0px;
+  z-index: 1000;
+}
+
+.b-tasks .b-task {
+  display: block;
+  padding: 2px;
+}
