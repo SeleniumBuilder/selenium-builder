@@ -64,8 +64,8 @@ builder.locator.locateElementByXpath = function(window, xpath) {
   if (!window.document.evaluate) {
     install(window);
   }
-  var els = window.document.evaluate(xpath);
-  return els.length > 0 ? els[0] : null;
+  var el = window.document.evaluate(xpath, window.document, null, 7, null);
+  return el.snapshotItem(0) ? el.snapshotItem(0) : null;
 };
 
 /**
