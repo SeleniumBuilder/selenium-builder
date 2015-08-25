@@ -17,22 +17,13 @@ builder.locator.methods = {
   link:       {toString: function() { return "link"; }},
   css:        {toString: function() { return "css"; }},
   xpath:      {toString: function() { return "xpath"; }},
-  dom:        {toString: function() { return "dom"; }},
-  identifier: {toString: function() { return "identifier"; }}
 };
 
-builder.locator.methods.id[builder.selenium1] = "id";
 builder.locator.methods.id[builder.selenium2] = "id";
-builder.locator.methods.name[builder.selenium1] = "name";
 builder.locator.methods.name[builder.selenium2] = "name";
-builder.locator.methods.link[builder.selenium1] = "link";
 builder.locator.methods.link[builder.selenium2] = "link text";
-builder.locator.methods.css[builder.selenium1] = "css";
 builder.locator.methods.css[builder.selenium2] = "css selector";
-builder.locator.methods.xpath[builder.selenium1] = "xpath";
 builder.locator.methods.xpath[builder.selenium2] = "xpath";
-builder.locator.methods.dom[builder.selenium1] = "dom";
-builder.locator.methods.identifier[builder.selenium1] = "identifier";
 
 builder.locator.methodForName = function(seleniumVersion, name) {
   for (var k in builder.locator.methods) {
@@ -41,6 +32,40 @@ builder.locator.methodForName = function(seleniumVersion, name) {
     }
   }
   return null;
+};
+
+builder.locator.locateElement = function(window, type, value) {
+  return builder.locator['locateElementBy' + builder.locator.capitalize(type.toString())](window, value);
+};
+
+builder.locator.locateElementById = function(window, id) {
+  return window.document.getElementById(id);
+};
+
+builder.locator.locateElementByName = function(window, name) {
+  var jq = jQuery("[name='" + name + "']", window.document);
+  return jq[0] ? jq[0] : null;
+};
+
+builder.locator.locateElementByLink = function(window, linkText) {
+  linkText = builder.normalizeWhitespace(linkText.toLowerCase());
+  var els = jQuery("a", window.document).get().filter(function(el) {
+    return builder.normalizeWhitespace(jQuery(el).text().toLowerCase()) == linkText;
+  });
+  return els.length > 0 ? els[0] : null;
+};
+
+builder.locator.locateElementByCss = function(window, css) {
+  var els = cssQuery(css, window.document);
+  return els.length > 0 ? els[0] : null;
+};
+
+builder.locator.locateElementByXpath = function(window, xpath) {
+  if (!window.document.evaluate) {
+    install(window);
+  }
+  var els = window.document.evaluate(xpath);
+  return els.length > 0 ? els[0] : null;
 };
 
 /**
@@ -126,7 +151,7 @@ builder.locator.deHighlight = function(callback) {
   if (!builder.locator.prevHighlightMethod) { callback(); return; }
   if (builder.getScript().seleniumVersion == builder.selenium1) {
     var win = window.bridge.getRecordingWindow();
-    var node = new MozillaBrowserBot(win).findElementBy(builder.locator.prevHighlightMethod[builder.selenium1], builder.locator.prevHighlightValue, win.document, win);
+    var node = builder.locator.locateElement(win, builder.locator.prevHighlightMethod, builder.locator.prevHighlightValue);
     if (node) {
       node.style.border = builder.locator.prevHighlightOriginalStyle;
     }
@@ -153,7 +178,7 @@ builder.locator.highlight = function(method, value) {
     builder.locator.prevHighlightValue = value;
     if (builder.getScript().seleniumVersion == builder.selenium1) {
       var win = window.bridge.getRecordingWindow();
-      var node = new MozillaBrowserBot(win).findElementBy(method[builder.selenium1], value, win.document, win);
+      var node = builder.locator.locateElement(win, method, value);
       if (node) {
         builder.locator.prevHighlightOriginalStyle = node.style.border;
         node.style.border = "2px solid red";
@@ -421,7 +446,7 @@ function getHtmlXPath(node) {
         attempt = attempt + "[.='" + text + "']";
       }
       // Check this actually works. 
-      if (new MozillaBrowserBot(win).findElementBy("xpath", attempt, win.document, win) === node) {
+      if (builder.locator.locateElement(win, "xpath", attempt) === node) {
         return attempt;
       }
     }
@@ -439,8 +464,7 @@ function hasNonstandardWhitespace(text) {
  * Uses the given locator to find the node it identifies. 
  */
 function findNode(locatorType, locator) {
-  var win = window.bridge.getRecordingWindow();
-  return new MozillaBrowserBot(win).findElementBy(locatorType, locator, win.document, win);
+  return builder.locator.locateElement(window.bridge.getRecordingWindow(), locatorType, locator);
 }
 
 /** Function from global.js in Windmill, licensed under Apache 2.0. */
@@ -454,8 +478,8 @@ function removeHTMLTags(str){
 }
 
 // From http://stackoverflow.com/questions/2332811/capitalize-words-in-string
-String.prototype.capitalize = function() {
-    return this.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+builder.locator.capitalize = function(s) {
+  return s.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
 };
 
 var transforms = {"uppercase": "toUpperCase", "lowercase": "toLowerCase", "capitalize": "capitalize", "none": "toString"};
@@ -467,7 +491,11 @@ function getCorrectCaseText(el, style) {
   } catch (e) {}
   style = transforms[style] ? style : "none";
   if (el.nodeType == 3) {
-    return el.textContent[transforms[style]]();
+    if (el.textContent[transforms[style]]) {
+      return el.textContent[transforms[style]]();
+    } else {
+      return builder.locator[transforms[style]](el.textContent);
+    }
   }
   var bits = [];
   for (var i = 0; i < el.childNodes.length; i++) {
@@ -475,7 +503,5 @@ function getCorrectCaseText(el, style) {
   }
   return bits.join("");
 }
-
-
 
 if (builder && builder.loader && builder.loader.loadNextMainScript) { builder.loader.loadNextMainScript(); }
