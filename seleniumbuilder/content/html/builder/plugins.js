@@ -25,6 +25,9 @@ builder.plugins.startupErrors = [];
 builder.plugins.MAX_HEADER_VERSION = 1;
 builder.plugins.PLUGINS_BUILDER_VERSION = 1;
 
+// Plugins can register zero-arg functions for safe shutdown here.
+builder.plugins.shutdownFunctions = [];
+
 // List of {"id":, "version"} objects.
 builder.plugins.bundledPlugins = [];
 
@@ -574,19 +577,8 @@ builder.plugins.start_2 = function(callback, bundledPluginsDir) {
 };
 
 builder.plugins.shutdown = function() {
-  var installeds = builder.plugins.getInstalledIDs();
-  for (var i = 0; i < installeds.length; i++) {
-    var state = builder.plugins.getState(installeds[i]);
-    if (
-      (state.installState == builder.plugins.INSTALLED || state.installState == builder.plugins.TO_UNINSTALL)  &&
-      (state.enabledState == builder.plugins.ENABLED || state.enabledState == builder.plugins.TO_DISABLE))
-    {
-      var info = builder.plugins.getInstalledInfo(installeds[i]);
-      if (info.shutdownFunction) {
-        // Eval is traditionally bad, but we've already let the plugin do whatever it wants!
-        eval(info.shutdownFunction + "();");
-      }
-    }
+  for (var i = 0; i < builder.plugins.shutdownFunctions.length; i++) {
+    builder.plugins.shutdownFunctions[i]();
   }
   builder.plugins.db.close();
 };
