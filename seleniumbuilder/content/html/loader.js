@@ -17,7 +17,12 @@ builder.loader.hideProgressBar = function() {
 };
 
 builder.loader.setProgressBar = function(halfPercents, text) {
-  document.getElementById('booting-file').innerHTML = text;
+  var fileEl = document.getElementById('booting-file');
+  var tEl = document.createTextNode(text);
+  if (fileEl.firstChild) {
+    fileEl.removeChild(fileEl.firstChild);
+  }
+  fileEl.appendChild(tEl);
   document.getElementById('booting-done').style.width = halfPercents + 'px';
   document.getElementById('booting-notdone').style.width = (201 - halfPercents) + 'px';
   document.getElementById('booting-notdone').style.left = halfPercents + 'px';
