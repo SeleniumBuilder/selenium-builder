@@ -20,12 +20,7 @@ builder.dialogs.record.show = function (node) {
           newNode('h3', _t('start_recording_new_script_at')),
           newNode('input', {id:'startup-url-2', type:'text', 'class':'texta', size:'24'}),
           newNode('p', {},
-            newNode('input', {type:'submit', value:'Selenium 1', 'class':'button',
-              click: function(e) {
-                builder.record.startRecording(jQuery("#startup-url-2").val(), builder.selenium1);
-                node.html('');
-              }}),
-            newNode('input', {type:'submit', value:'Selenium 2', 'class':'button',
+            newNode('input', {type:'submit', value:_t('menu_record'), 'class':'button',
               click: function(e) {
                 builder.record.startRecording(jQuery("#startup-url-2").val(), builder.selenium2);
                 node.html('');

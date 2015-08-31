@@ -75,24 +75,13 @@ builder.VerifyExplorer.prototype = {
     var selection = window.bridge.getRecordingWindow().getSelection();
 
     if (selection && selection.toString().trim().length > 0) {
-      if (this.seleniumVersion == builder.selenium1) {
-        this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifyTextPresent,
-          builder.normalizeWhitespace(selection.toString())));
-      }
-      if (this.seleniumVersion == builder.selenium2) {
-        this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyTextPresent,
-          builder.normalizeWhitespace(selection.toString())));
-      }
+      this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyTextPresent,
+        builder.normalizeWhitespace(selection.toString())));
       return;
     }
     
     if (tag == "SELECT") {
-      if (this.seleniumVersion == builder.selenium1) {
-        this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifySelectedValues, locator, e.target.value));
-      }
-      if (this.seleniumVersion == builder.selenium2) {
-        this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementValue, locator, e.target.value));
-      }
+      this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementValue, locator, e.target.value));
       return;
     }
     
@@ -110,37 +99,21 @@ builder.VerifyExplorer.prototype = {
         // checked property.
         var ae = this;
         setTimeout(function () {
-          var step = null;
-          if (ae.seleniumVersion == builder.selenium1) {
-            step = new builder.Step(builder.selenium1.stepTypes.verifyChecked, locator);
-          }
-          if (ae.seleniumVersion == builder.selenium2) {
-            step = new builder.Step(builder.selenium1.stepTypes.verifyElementSelected, locator);
-          }
+          var step = new builder.Step(builder.selenium2.stepTypes.verifyElementSelected, locator);
           step.negated = !e.target.checked;
           ae.recordStep(step);
         }, 0);
       } else {
-        if (this.seleniumVersion == builder.selenium1) {
-          this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifyValue, locator, e.target.value));
-        }
-        if (this.seleniumVersion == builder.selenium2) {
-          this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementValue, locator, e.target.value));
-        }
-      }
-      return;
-    }
-    if (tag == "TEXTAREA") {
-      if (this.seleniumVersion == builder.selenium1) {
-        this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifyValue, locator, e.target.value));
-      }
-      if (this.seleniumVersion == builder.selenium2) {
         this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementValue, locator, e.target.value));
       }
       return;
     }
+    if (tag == "TEXTAREA") {
+      this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementValue, locator, e.target.value));
+      return;
+    }
     if (e.target.textContent != "") {
-      var text = this.seleniumVersion == builder.selenium2 ? getCorrectCaseText(e.target) : e.target.textContent;
+      var text = getCorrectCaseText(e.target);
       if (text.length > 200) {
         var nextSpace = text.indexOf(' ', 200);
         if (nextSpace > -1 && nextSpace < 250) {
@@ -154,24 +127,12 @@ builder.VerifyExplorer.prototype = {
           }
         }
       }
-      if (this.seleniumVersion == builder.selenium1) {
-        this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifyTextPresent,
+      this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyTextPresent,
           builder.normalizeWhitespace(text)));
-      }
-      if (this.seleniumVersion == builder.selenium2) {
-        this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyTextPresent,
-          builder.normalizeWhitespace(text)));
-      }
       return;
     }
     
-    
-    if (this.seleniumVersion == builder.selenium1) {
-      this.recordStep(new builder.Step(builder.selenium1.stepTypes.verifyVisible, locator));
-    }
-    if (this.seleniumVersion == builder.selenium2) {
-      this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementPresent, locator));
-    }
+    this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyElementPresent, locator));
   },
 
   /**

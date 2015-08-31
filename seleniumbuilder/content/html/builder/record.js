@@ -7,8 +7,6 @@ builder.record.verifyExplorer = null;
 builder.record.recording = false;
 builder.record.recorder = null;
 builder.record.pageLoadListener = null;
-builder.record.selenium1WaitsListener = null;
-builder.record.selenium1WaitsListenerNoticedLoading = false;
 builder.record.insertionIndex = 100000;
 builder.record.lastRecordedStep = null;
 
@@ -77,10 +75,6 @@ builder.record.stop = function() {
   if (builder.record.recorder) { builder.record.recorder.destroy(); }
   builder.record.recorder = null;
   builder.pageState.removeListener(builder.record.pageLoadListener);
-  if (builder.record.selenium1WaitsListener) {
-    builder.pageState.removeListener(builder.record.selenium1WaitsListener);
-    builder.record.selenium1WaitsListener = null;
-  }
   builder.record.recording = false;
   builder.stepdisplay.update();
 };
@@ -128,23 +122,6 @@ builder.record.continueRecording = function(insertionIndex) {
     }
   };
   builder.pageState.addListener(builder.record.pageLoadListener);
-  
-  if (builder.getScript().seleniumVersion === builder.selenium1) {
-    builder.record.selenium1WaitsListenerNoticedLoading = false;
-    builder.record.selenium1WaitsListener = function(url, pageloading) {
-      if (pageloading && !builder.record.selenium1WaitsListenerNoticedLoading) {
-        builder.record.selenium1WaitsListenerNoticedLoading = true;
-        return;
-      }
-      if (builder.record.selenium1WaitsListenerNoticedLoading) {
-        builder.record.recordStep(new builder.Step(builder.selenium1.stepTypes.waitForPageToLoad, "60000"));
-        builder.record.selenium1WaitsListenerNoticedLoading = false;
-        return;
-      }
-    };
-    
-    builder.pageState.addListener(builder.record.selenium1WaitsListener);
-  }
 };
 
 builder.record.startRecording = function(urlText, seleniumVersion) {  
@@ -179,12 +156,7 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
         builder.gui.switchView(builder.views.script);
         builder.suite.addScript(new builder.Script(seleniumVersion));
         builder.getScript().saveRequired = true;
-        if (seleniumVersion === builder.selenium1) {
-          builder.getScript().addStep(new builder.Step(builder.selenium1.stepTypes.open, url.href()));
-          builder.record.recordStep(new builder.Step(builder.selenium1.stepTypes.waitForPageToLoad, "60000"));
-        } else {
-          builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
-        }
+        builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
         builder.stepdisplay.update();
         builder.pageState.removeListener(builder.record.pageLoadListener);
         builder.record.continueRecording();

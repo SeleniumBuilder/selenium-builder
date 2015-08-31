@@ -1,6 +1,5 @@
 /**
- * Dialog that can be inserted to allow the user to export the current script using a variety of
- * formats, via builder.selenium1.adapter et al.
+ * Dialog that can be inserted to allow the user to export the current script using a variety of formats.
  */
 builder.dialogs.exportscript = {};
 
@@ -51,9 +50,6 @@ builder.dialogs.exportscript.hide = function () {
 
 function create_sel2_format_li(myFormat) {
   var script = builder.getScript();
-  if (script.seleniumVersion === builder.selenium1) {
-    script = builder.versionconverter.convertScript(script, builder.selenium2);
-  }
   var nonExportables = myFormat.nonExportables(script);
   if (nonExportables.length > 0) {
     var l = "";
