@@ -11,7 +11,7 @@ builder.suite.shareState = false;
 builder.doShareSuiteState = function() {
   // Can only share suite state if all suite scripts are of the same Selenium version!
   // This is currently guaranteed, but once Sel3 comes around...
-  return builder.suite.shareState && builder.suite.areAllScriptsOfVersion(builder.selenium2));
+  return builder.suite.shareState && builder.suite.areAllScriptsOfVersion(builder.selenium2);
 };
 
 builder.suite.getNumberOfScripts = function() {

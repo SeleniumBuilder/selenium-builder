@@ -12,7 +12,7 @@ builder.registerPostLoadHook(function () {
   jQuery('#startrecording-msg').text(_t('start_recording_at'));
   jQuery('#cookie-warning').text(_t('cookie_warning'));
   
-  jQuery('#startup-start-recording-sel2-button').text(_t('record'));
+  jQuery('#startup-start-recording-sel2-button').val(_t('menu_record'));
   jQuery('#startup-start-recording-sel2').submit(function() {
     builder.record.startRecording(jQuery('#startup-url').val(), builder.selenium2);
   });
