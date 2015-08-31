@@ -142,11 +142,6 @@ builder.registerPostLoadHook(function() {
   builder.suite.addScriptChangeListener(function() {
     if (builder.getScript() == null) { return; }
     var script = builder.getScript();
-    if (script.seleniumVersion == builder.selenium1) {
-      builder.gui.menu.hideItem('script-settings');
-    } else {
-      builder.gui.menu.showItem('script-settings');
-    }
     jQuery('#selenium-version-display').html(script.seleniumVersion.name);
     
     jQuery('#script-discard').html(builder.suite.getNumberOfScripts() > 1 ? _t('menu_discard_suite') : _t('menu_discard'));
@@ -191,7 +186,7 @@ builder.registerPostLoadHook(function() {
   builder.suite.shareState = bridge.prefManager.getBoolPref("extensions.seleniumbuilder3.shareSuiteState");
     
   builder.gui.menu.addItem('run', builder.suite.shareState ? _t('menu_dont_share_state_across_suite') : _t('menu_share_state_across_suite'), 'run-share-state', function() {
-    if (!(builder.suite.areAllScriptsOfVersion(builder.selenium1) || builder.suite.areAllScriptsOfVersion(builder.selenium2))) {
+    if (!builder.suite.areAllScriptsOfVersion(builder.selenium2)) {
       return;
     }
     if (builder.suite.shareState) {
@@ -210,7 +205,7 @@ builder.registerPostLoadHook(function() {
   });
   
   builder.suite.addScriptChangeListener(function() {
-    if (builder.suite.areAllScriptsOfVersion(builder.selenium1) || builder.suite.areAllScriptsOfVersion(builder.selenium2)) {
+    if (builder.suite.areAllScriptsOfVersion(builder.selenium2)) {
       builder.gui.menu.showItemAsEnabled('run-share-state');
     } else {
       builder.gui.menu.showItemAsDisabled('run-share-state');

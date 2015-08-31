@@ -181,7 +181,7 @@ builder.loader.mainScripts = [
   "builder/selenium2/io/formats/csharp_new_nunit.js",
   "builder/selenium2/io/formats/english.js",
   "builder/locator.js",
-  "builder/suite2.js",
+  "builder/suite.js",
   "builder/stepdisplay.js",
   "builder/selenium2/playback.js",
   "builder/selenium2/rcPlayback.js",

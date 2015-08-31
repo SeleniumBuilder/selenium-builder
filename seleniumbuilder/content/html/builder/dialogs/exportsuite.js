@@ -1,6 +1,5 @@
 /**
- * Dialog that can be inserted to allow the user to export the suite using a variety of formats,
- * via builder.selenium1.adapter et al.
+ * Dialog that can be inserted to allow the user to export the suite using a variety of formats.
  */
 builder.dialogs.exportsuite = {};
 
