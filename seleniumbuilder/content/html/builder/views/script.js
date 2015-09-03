@@ -5,7 +5,8 @@ builder.views.script.clearResults = function() {
   for (var i = 0; i < script.steps.length; i++) {
     jQuery('#' + script.steps[i].id + '-content').css('background-color', 'white');
     jQuery('#' + script.steps[i].id + '-error').hide();
-    jQuery('#' + script.steps[i].id + '-message').hide();  
+    jQuery('#' + script.steps[i].id + '-message').hide();
+    builder.stepdisplay.hideProgressBar(script.steps[i].id);
     script.steps[i].outcome = null;
     script.steps[i].runmessage = null;
     script.steps[i].failureMessage = null;
