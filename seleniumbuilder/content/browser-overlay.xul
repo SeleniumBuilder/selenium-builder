@@ -2,7 +2,7 @@
 <!DOCTYPE seleniumbuilder SYSTEM "chrome://seleniumbuilder3/locale/translations.dtd">
 <overlay id="seleniumbuilder-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <script src="seleniumbuilder3.js" />
-
+    
     <menupopup id="menuWebDeveloperPopup"> 
         <menuitem
             label="&runseleniumbuilder;"

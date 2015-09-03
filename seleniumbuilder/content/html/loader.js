@@ -129,14 +129,6 @@ builder.registerPreShutdownHook = function(f) {
 builder.loader.mainScriptIndex = 0;
 
 builder.loader.mainScripts = [
-  // Load Libraries
-  "lib/jquery-ui-1.8.17.custom/js/jquery-1.7.1.min.js",
-  "lib/jquery-ui-1.8.17.custom/js/jquery-ui-1.8.17.custom.min.js",
-  "lib/cssQuery-p.js",
-  "lib/json2.js",
-  "lib/js-xpath.js",
-  "lib/jquery.csv-0.71.min.js",
-  // Load Selenium Builder
   "builder/utils.js",
   "builder/i18n/translate.js",
   "builder/i18n/en.js",
