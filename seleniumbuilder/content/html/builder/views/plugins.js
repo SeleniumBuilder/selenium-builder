@@ -165,9 +165,10 @@ builder.views.plugins.wirePluginEntry = function(info) {
     builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UPDATE);
     info.installState = builder.plugins.TO_UPDATE;
     builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[bridge.browserType()].downloadUrl);
-    builder.plugins.setGotoPluginsView(true);
-    builder.reboot();
+    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[bridge.browserType()].downloadUrl, function() {
+      builder.plugins.setGotoPluginsView(true);
+      builder.reboot();
+    });
   });
   
   jQuery('#' + info.identifier + '-enable-and-reboot').click(function() {
