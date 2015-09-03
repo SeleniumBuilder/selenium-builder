@@ -54,7 +54,7 @@ builder.selenium2.rcPlayback.makeRun = function(settings, script, postRunCallbac
     currentStepIndex: -1,
     currentStep: null,
     script: script,
-    requestStop: false,
+    stopped: false,
     playResult: { success: false },
     pausedOnBreakpoint: false,
     vars: ivs,
@@ -157,7 +157,9 @@ builder.selenium2.rcPlayback.run = function(settings, postRunCallback, jobStarte
     "POST",
     "",
     JSON.stringify({"desiredCapabilities":caps}),
-    builder.selenium2.rcPlayback.startJob);
+    builder.selenium2.rcPlayback.startJob,
+    null,
+    /* timeout */ 10000);
   return r;
 };
 
@@ -221,7 +223,7 @@ builder.selenium2.rcPlayback.continueRun = function(r) {
 
 builder.selenium2.rcPlayback.playNextStep = function(r) {
   r.currentStepIndex++;
-  if (!r.requestStop && r.currentStepIndex < r.script.steps.length) {
+  if (r.currentStepIndex < r.script.steps.length) {
     r.currentStep = r.script.steps[r.currentStepIndex];
     if (builder.breakpointsEnabled && r.currentStep.breakpoint) {
       r.pausedOnBreakpoint = true;
@@ -242,12 +244,11 @@ builder.selenium2.rcPlayback.playNextStep = function(r) {
 
 builder.selenium2.rcPlayback.shutdown = function(r) {
   jQuery('#edit-rc-connecting').hide();
-  if (r.preserveRunSession) {
-    builder.selenium2.rcPlayback.postShutdown(r);
-  } else {
-    // Finish session.
-    builder.selenium2.rcPlayback.send(r, "DELETE", "", "", builder.selenium2.rcPlayback.postShutdown, builder.selenium2.rcPlayback.postShutdown);
+  r.stopped = true;
+  if (!r.preserveRunSession) {
+    builder.selenium2.rcPlayback.send(r, "DELETE", "", "");
   }
+  builder.selenium2.rcPlayback.postShutdown(r);
 };
 
 builder.selenium2.rcPlayback.postShutdown = function(r) {
@@ -262,10 +263,8 @@ builder.selenium2.rcPlayback.getTestRuns = function() {
 };
 
 builder.selenium2.rcPlayback.stopTest = function(r) {
-  if (r.pausedOnBreakpoint) {
+  if (!r.stopped) {
     builder.selenium2.rcPlayback.shutdown(r);
-  } else {
-    r.requestStop = true;
   }
 };
 
@@ -302,7 +301,8 @@ builder.selenium2.rcPlayback.recordError = function(r, err) {
   builder.selenium2.rcPlayback.shutdown(r);
 };
 
-builder.selenium2.rcPlayback.send = function(r, http_method, path, msg, callback, errorCallback) {
+builder.selenium2.rcPlayback.send = function(r, http_method, path, msg, callback, errorCallback, timeout) {
+  timeout = timeout || 300000;
   var url = null;
   if (r.sessionID) {
     url = "http://" + r.hostPort + "/wd/hub/session/" + r.sessionID + path;
@@ -321,7 +321,9 @@ builder.selenium2.rcPlayback.send = function(r, http_method, path, msg, callback
     type: http_method || "POST",
     url: url,
     data: msg,
+    timeout: timeout,
     success: function(t) {
+      if (r.stopped) { return; } // We've broken up with the server and are letting the calls go to voicemail.
       if (callback) {
         try {
           callback(r, builder.selenium2.rcPlayback.parseServerResponse(t));
@@ -333,7 +335,13 @@ builder.selenium2.rcPlayback.send = function(r, http_method, path, msg, callback
       }
     },
     error: function(xhr, textStatus, errorThrown) {
-      var response = builder.selenium2.rcPlayback.parseServerResponse(xhr.responseText);
+      if (r.stopped) { return; } // We've broken up with the server and are letting the calls go to voicemail.
+      var response = "";
+      if (textStatus == 'timeout') {
+        response = 'timeout';
+      } else {
+        response = builder.selenium2.rcPlayback.parseServerResponse(xhr.responseText);
+      }
       if (errorCallback) {
         try {
           errorCallback(r, response);
@@ -479,11 +487,6 @@ builder.selenium2.rcPlayback.wait = function(r, testFunction) {
           builder.selenium2.rcPlayback.recordError(r, "Wait timed out.");
           return;
         }
-        if (r.requestStop) {
-          r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.NO_CHANGE, null, null, 0);
-          builder.selenium2.rcPlayback.shutdown(r);
-          return;
-        }
         r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.NO_CHANGE, null, null, 1 + r.waitCycle * 99 * builder.selenium2.rcPlayback.waitCycleDivisor / r.waitMs);
         r.waitTimeout = window.setTimeout(
           r.waitFunction,
@@ -504,10 +507,8 @@ builder.selenium2.rcPlayback.types.pause = function(r, step) {
   var max = builder.selenium2.rcPlayback.param(r, "waitTime") / 100;
   r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.NO_CHANGE, null, null, 1);
   r.pauseInterval = setInterval(function() {
-    if (r.requestStop) {
+    if (r.stopped) {
       window.clearInterval(r.pauseInterval);
-      r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.NO_CHANGE, null, null, 0);
-      builder.selenium2.rcPlayback.shutdown(r);
       return;
     }
     r.pauseCounter++;
