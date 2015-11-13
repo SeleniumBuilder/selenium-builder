@@ -1,4 +1,4 @@
-var fc = new bridge.FormatCollection(bridge.SeleniumIDE.Prefs.DEFAULT_OPTIONS);
+var fc = new sebuilder.FormatCollection(sebuilder.SeleniumIDE.Prefs.DEFAULT_OPTIONS);
 var format = fc.findFormat('default');
-var tc = new bridge.TestCase();
+var tc = new sebuilder.TestCase();
 format.saveAs(tc);

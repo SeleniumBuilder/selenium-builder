@@ -157,7 +157,7 @@ builder.registerPostLoadHook(function() {
   
   jQuery('#record-do-mouseovers').change(function() {
     builder.doRecordMouseovers = !!jQuery('#record-do-mouseovers').attr('checked');
-    bridge.prefManager.setBoolPref("extensions.seleniumbuilder3.doRecordMouseovers", builder.doRecordMouseovers);
+    sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.doRecordMouseovers", builder.doRecordMouseovers);
   });
 });
 

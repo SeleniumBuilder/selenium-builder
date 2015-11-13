@@ -37,14 +37,14 @@ builder.io.addStorageSystem({
   "load": function(path, basePath, callback) {
     var file = null;
     if (basePath) {
-      var baseFile = bridge.SeFileUtils.getFile(basePath.path);
+      var baseFile = sebuilder.SeFileUtils.getFile(basePath.path);
       if (baseFile && baseFile.exists()) {
         file = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
         file.setRelativeDescriptor(baseFile.parent, path.path);
       }
     }
     if (!file || !file.exists()) {
-      try { file = bridge.SeFileUtils.getFile(path.path); } catch (e) {}
+      try { file = sebuilder.SeFileUtils.getFile(path.path); } catch (e) {}
     }
     if (!file || !file.exists()) {
       callback(null);
@@ -61,7 +61,7 @@ builder.io.addStorageSystem({
     callback({ "text": text, "path": { "path": file.path, "where": "local" } });
   },
   "deriveRelativePath": function(path, basePath) {
-    var rp = bridge.SeFileUtils.getFile(path.path).getRelativeDescriptor(bridge.SeFileUtils.getFile(basePath.path).parent);
+    var rp = sebuilder.SeFileUtils.getFile(path.path).getRelativeDescriptor(sebuilder.SeFileUtils.getFile(basePath.path).parent);
     return rp == null ? path : {"path": rp, "where": path.where, "format": path.format};
   }
 });
@@ -69,19 +69,19 @@ builder.io.addStorageSystem({
 builder.io.loadFile = function(path) {
   var file = null;
   if (!path) {
-    file = bridge.showFilePicker(window, _t('select_a_file'), 
+    file = sebuilder.showFilePicker(window, _t('select_a_file'), 
         Components.interfaces.nsIFilePicker.modeOpen,
         "extensions.seleniumbuilder3.loadSavePath",
         function(fp) { return fp.file; });
   } else {
-    file = bridge.SeFileUtils.getFile(path);
+    file = sebuilder.SeFileUtils.getFile(path);
   }
   return file;
 };
 
 builder.io.readFile = function(file) {
-  var sis = bridge.SeFileUtils.openFileInputStream(file);
-  var data = bridge.SeFileUtils.getUnicodeConverter('UTF-8').ConvertToUnicode(sis.read(sis.available()));
+  var sis = sebuilder.SeFileUtils.openFileInputStream(file);
+  var data = sebuilder.SeFileUtils.getUnicodeConverter('UTF-8').ConvertToUnicode(sis.read(sis.available()));
   sis.close();
   return data;
 };

@@ -1,5 +1,5 @@
 /**
- * Listens for page loads/unloads. Call on window.bridge.getRecordingWindow() to get the record
+ * Listens for page loads/unloads. Call on window.sebuilder.getRecordingWindow() to get the record
  * window to listen on.
  */
 builder.loadlistener = {};
@@ -60,7 +60,7 @@ builder.loadlistener.getUnloadListener = function(rootW, w, load_callback, unloa
 
 /**
  * Execute function fn once window w has reloaded. Uses a Firefox observerService observer
- * attached in seleniumBuilder.js (window.bridge).
+ * attached in seleniumBuilder.js (window.sebuilder).
  */
 builder.loadlistener.executeAfterPageLoad = function(w, fn) {
   // This used to use a more complex series of event listeners, but it turns out that this is
@@ -68,9 +68,9 @@ builder.loadlistener.executeAfterPageLoad = function(w, fn) {
   // listeners.
   // However, for playback, we do want to wait until the page is truly truly loaded, which is why
   // the code in selenium1/playback.js now uses the code previously resident here. 
-  window.bridge.addDocLoadListener(w, function() {
+  window.sebuilder.addDocLoadListener(w, function() {
     fn();
-    window.bridge.removeDocLoadListener(w);
+    window.sebuilder.removeDocLoadListener(w);
   });
 };
 

@@ -6,9 +6,11 @@
   <script src="lib/javascript-xpath-latest.js"></script>
   <script src="lib/cssQuery-p.js"></script>
   <script type="text/javascript">
-    window.boot = function(bridge) {
+    window.boot = function(sebuilder) {
       window.stayAlive = true;
-      window.bridge = bridge;
+      window.sebuilder = sebuilder;
+      window.bridge = sebuilder;
+      var bridge = sebuilder;
       
       // Load the loader script!
       var script = document.createElement('script');
@@ -20,7 +22,7 @@
       document.getElementsByTagName('head')[0].appendChild(script);
     };
     
-    // If we haven't been told by bridge.boot to stay open, we are probably an orphaned window left
+    // If we haven't been told by sebuilder.boot to stay open, we are probably an orphaned window left
     // over from the previous session, so we close. 
     window.assumeDeadBy = setTimeout(function() {
       if (!window.stayAlive) {

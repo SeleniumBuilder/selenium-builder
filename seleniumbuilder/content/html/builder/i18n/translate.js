@@ -6,10 +6,10 @@ builder.translate.newLocName = builder.translate.DEFAULT_LOC_NAME;
 builder.translate.locales = {};
 
 builder.translate.getLocNamePref = function() {
-  if (bridge.prefManager.prefHasUserValue("extensions.seleniumbuilder3.translate.locName") &&
-      bridge.prefManager.getCharPref("extensions.seleniumbuilder3.translate.locName") != "")
+  if (sebuilder.prefManager.prefHasUserValue("extensions.seleniumbuilder3.translate.locName") &&
+      sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.translate.locName") != "")
   {
-    return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.translate.locName");
+    return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.translate.locName");
   } else {
     var localeService = Components.classes["@mozilla.org/intl/nslocaleservice;1"]
                                   .getService(Components.interfaces.nsILocaleService);
@@ -20,7 +20,7 @@ builder.translate.getLocNamePref = function() {
 
 builder.translate.setNewLocaleName = function(locName) {
   builder.translate.newLocName = locName;
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.translate.locName", locName);
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.translate.locName", locName);
 };
 
 builder.translate.addLocale = function(l) {

@@ -1,4 +1,4 @@
-builder.doRecordMouseovers = bridge.prefManager.getBoolPref("extensions.seleniumbuilder3.doRecordMouseovers");
+builder.doRecordMouseovers = sebuilder.prefManager.getBoolPref("extensions.seleniumbuilder3.doRecordMouseovers");
 
 /**
  * A class that can record clicks and typing on a window and all sub-windows.
@@ -47,7 +47,7 @@ builder.selenium2.Recorder = function(top_window, recordStep, getLastRecordedSte
   }, 200);
   
   // Now listen on navigation functions in the browser.
-  this.bind_browser(window.bridge.getBrowser());
+  this.bind_browser(window.sebuilder.getBrowser());
 };
 
 builder.selenium2.Recorder.prototype = {
@@ -597,14 +597,14 @@ builder.selenium2.Recorder.prototype = {
     var rec = this;
     // Firefox 3.5 Only
     this.observe(browser, 'BrowserBack', function () {
-      if (browser.content == window.bridge.getRecordingWindow()) {
+      if (browser.content == window.sebuilder.getRecordingWindow()) {
         rec.recordStep(new builder.Step(builder.selenium2.stepTypes.goBack));
       }
     });
 
     // The other BrowserReload* functions are just wrappers around this
     this.observe(browser, 'BrowserReloadWithFlags', function () {
-      if (browser.content == window.bridge.getRecordingWindow()) {
+      if (browser.content == window.sebuilder.getRecordingWindow()) {
         rec.recordStep(new builder.Step(builder.selenium2.stepTypes.refresh));
       }
     });
@@ -627,7 +627,7 @@ builder.selenium2.Recorder.prototype = {
   destroy: function() {
     builder.loadlistener.on_all_frames(this.top_window, this.listeners.unbindFrame, 0);
     clearInterval(this.checkFrames);
-    this.unbind_browser(window.bridge.getBrowser());
+    this.unbind_browser(window.sebuilder.getBrowser());
   }
 };
 

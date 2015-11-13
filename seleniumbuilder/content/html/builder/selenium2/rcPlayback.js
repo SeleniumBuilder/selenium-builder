@@ -2,35 +2,35 @@
 builder.selenium2.rcPlayback = {};
 
 builder.selenium2.rcPlayback.getHostPort = function() {
-  return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.remote.hostport");
+  return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.remote.hostport");
 };
 
 builder.selenium2.rcPlayback.setHostPort = function(hostPort) {
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.remote.hostport", hostPort);
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.remote.hostport", hostPort);
 };
 
 builder.selenium2.rcPlayback.getBrowserString = function() {
-  return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.remote.browserstring");
+  return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.remote.browserstring");
 };
 
 builder.selenium2.rcPlayback.setBrowserString = function(browserstring) {
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.remote.browserstring", browserstring);
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.remote.browserstring", browserstring);
 };
 
 builder.selenium2.rcPlayback.getBrowserVersion = function() {
-  return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.remote.browserversion");
+  return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.remote.browserversion");
 };
 
 builder.selenium2.rcPlayback.setBrowserVersion = function(browserversion) {
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.remote.browserversion", browserversion);
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.remote.browserversion", browserversion);
 };
 
 builder.selenium2.rcPlayback.getPlatform = function() {
-  return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.remote.platform");
+  return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.remote.platform");
 };
 
 builder.selenium2.rcPlayback.setPlatform = function(platform) {
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.remote.platform", platform);
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.remote.platform", platform);
 };
 
 /** What interval to check waits for. */
@@ -1236,7 +1236,7 @@ builder.selenium2.rcPlayback.types.storeCookiePresent = function(r, step) {
 
 builder.selenium2.rcPlayback.types.saveScreenshot = function(r, step) {
   builder.selenium2.rcPlayback.send(r, "GET", "/screenshot", "", function(r, response) {
-    bridge.writeBinaryFile(builder.selenium2.rcPlayback.param(r, "file"), bridge.decodeBase64(response.value));
+    sebuilder.writeBinaryFile(builder.selenium2.rcPlayback.param(r, "file"), sebuilder.decodeBase64(response.value));
     builder.selenium2.rcPlayback.recordResult(r, {success: true});
   });
 };

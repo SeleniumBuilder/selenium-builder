@@ -1,61 +1,61 @@
-// Establish bridge namespace.
-var bridge = {};
+// Establish sebuilder namespace.
+var sebuilder = {};
 /** The tab node that is highlighted green (can be used to get a reference to the content). */
-bridge.recordingTab = null;
+sebuilder.recordingTab = null;
 /** The window we're recording in, if different from the one in the recordingTab. */
-bridge.customRecordingWindow = null;
+sebuilder.customRecordingWindow = null;
 /** The window that contains the recorder. */
-bridge.recorderWindow = null;
+sebuilder.recorderWindow = null;
 /** Document load listeners, mapped from window to listener. */
-bridge.docLoadListeners = {};
+sebuilder.docLoadListeners = {};
 
-bridge.logMessage = function(aMessage) {
+sebuilder.logMessage = function(aMessage) {
   var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
       .getService(Components.interfaces.nsIConsoleService);
   consoleService.logStringMessage(aMessage);
 }
 
 /** Set an alternate window to record in that's not the window of the recordingTab. */
-bridge.setCustomRecordingWindow = function(newWindow) {
-  bridge.customRecordingWindow = newWindow;
+sebuilder.setCustomRecordingWindow = function(newWindow) {
+  sebuilder.customRecordingWindow = newWindow;
 };
 
 /** @return The content window we're recording in. */
-bridge.getRecordingWindow = function() {
-  if (bridge.customRecordingWindow) { return customRecordingWindow; }
-  return getBrowser().getBrowserForTab(bridge.recordingTab).contentWindow;
+sebuilder.getRecordingWindow = function() {
+  if (sebuilder.customRecordingWindow) { return customRecordingWindow; }
+  return getBrowser().getBrowserForTab(sebuilder.recordingTab).contentWindow;
 };
 
 /** Moves the content window we're recording into the foreground. */
-bridge.focusRecordingTab = function() {
-  if (bridge.customRecordingWindow) {
-    bridge.customRecordingWindow.focus();
+sebuilder.focusRecordingTab = function() {
+  if (sebuilder.customRecordingWindow) {
+    sebuilder.customRecordingWindow.focus();
     return;
   }
-  getBrowser().selectedTab = bridge.recordingTab;
+  getBrowser().selectedTab = sebuilder.recordingTab;
   window.focus();
 };
 
 /** Moves the Selenium Builder window into the foreground. */
-bridge.focusRecorderWindow = function() {
-  bridge.focusRecordingTab();
-  bridge.recorderWindow.focus();
+sebuilder.focusRecorderWindow = function() {
+  sebuilder.focusRecordingTab();
+  sebuilder.recorderWindow.focus();
 };
 
 /** @return The main browser window we're recording in. */
-bridge.getBrowser = function() {
+sebuilder.getBrowser = function() {
   return window;
 };
 
 /** Shuts down SeBuilder. */
-bridge.shutdown = function() {
-  if (bridge.recordingTab) {
-    bridge.recordingTab.style.setProperty("background-color", "", "");
+sebuilder.shutdown = function() {
+  if (sebuilder.recordingTab) {
+    sebuilder.recordingTab.style.setProperty("background-color", "", "");
   }
-  if (bridge.recorderWindow) {
-    bridge.recorderWindow.close();
+  if (sebuilder.recorderWindow) {
+    sebuilder.recorderWindow.close();
   }
-  bridge.recorderWindow = null;
+  sebuilder.recorderWindow = null;
 };
 
 /**
@@ -63,44 +63,44 @@ bridge.shutdown = function() {
  * listener per window. (Though the code can be easily improved using arrays and splicing
  * if this becomes a problem.)
  */ 
-bridge.addDocLoadListener = function(win, l) {
-  bridge.docLoadListeners[win] = l;
+sebuilder.addDocLoadListener = function(win, l) {
+  sebuilder.docLoadListeners[win] = l;
 };
 
-bridge.removeDocLoadListener = function(win, l) {
-  delete bridge.docLoadListeners[win];
+sebuilder.removeDocLoadListener = function(win, l) {
+  delete sebuilder.docLoadListeners[win];
 };
 
-bridge.prefManager = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+sebuilder.prefManager = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
 
-bridge.browserType = function() { return "firefox"; }
+sebuilder.browserType = function() { return "firefox"; }
 
-bridge.pluginRepository = function() {
-  return bridge.prefManager.getCharPref("extensions.seleniumbuilder3.plugins.repository");
+sebuilder.pluginRepository = function() {
+  return sebuilder.prefManager.getCharPref("extensions.seleniumbuilder3.plugins.repository");
 };
 
-bridge.setPluginRepository = function(rep) {
-  bridge.prefManager.setCharPref("extensions.seleniumbuilder3.plugins.repository", rep);
+sebuilder.setPluginRepository = function(rep) {
+  sebuilder.prefManager.setCharPref("extensions.seleniumbuilder3.plugins.repository", rep);
 };
 
-bridge.boot = function() {
+sebuilder.boot = function() {
   // If we've already booted just put the GUI into the foreground.
-  if (bridge.recorderWindow) {
-    bridge.recorderWindow.focus();
+  if (sebuilder.recorderWindow) {
+    sebuilder.recorderWindow.focus();
     return;
   }
   
   // Save the tab the user has currently open: it's the one we'll record from.
-  bridge.recordingTab = getBrowser().mCurrentTab;
+  sebuilder.recordingTab = getBrowser().mCurrentTab;
   
-  if (bridge.getRecordingWindow().location.href.substring(0, "about:".length) == "about:") {
-    bridge.getRecordingWindow().location = "http://www.sebuilder.com";
+  if (sebuilder.getRecordingWindow().location.href.substring(0, "about:".length) == "about:") {
+    sebuilder.getRecordingWindow().location = "http://www.sebuilder.com";
   }
 
   // Make it obvious which tab is recording by turning it green!
-  bridge.recordingTab.style.setProperty("background-color", "#bfee85", "important");
+  sebuilder.recordingTab.style.setProperty("background-color", "#bfee85", "important");
   
-  bridge.recorderWindow = window.open("chrome://seleniumbuilder3/content/html/gui.html", "seleniumbuilder", "width=550,height=600,top=50,left=50,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes");
+  sebuilder.recorderWindow = window.open("chrome://seleniumbuilder3/content/html/gui.html", "seleniumbuilder", "width=550,height=600,top=50,left=50,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes");
     
   // Install a listener with the browser to be notified when a new document is loaded.
   try {
@@ -108,8 +108,8 @@ bridge.boot = function() {
         Components.interfaces.nsIObserverService);
     var observer = {
       observe: function (doc) {
-        if (bridge.docLoadListeners[doc.defaultView]) {
-          bridge.docLoadListeners[doc.defaultView]();
+        if (sebuilder.docLoadListeners[doc.defaultView]) {
+          sebuilder.docLoadListeners[doc.defaultView]();
         }
       }
     };
@@ -118,15 +118,15 @@ bridge.boot = function() {
     dump(e);
   }
   
-  bridge.booter = setInterval(function() {
-    if (bridge.recorderWindow.wrappedJSObject.boot) {
-      bridge.recorderWindow.wrappedJSObject.boot(bridge);
-      clearInterval(bridge.booter);
+  sebuilder.booter = setInterval(function() {
+    if (sebuilder.recorderWindow.wrappedJSObject.boot) {
+      sebuilder.recorderWindow.wrappedJSObject.boot(sebuilder);
+      clearInterval(sebuilder.booter);
     }
   }, 100);
 };
 
-bridge.getInternalFile = function(path, callback) {
+sebuilder.getInternalFile = function(path, callback) {
   var MY_ID = "seleniumbuilder@sebuilder.com";
   // We may be on FF 4 or later
   Components.utils.import("resource://gre/modules/AddonManager.jsm");
@@ -138,7 +138,7 @@ bridge.getInternalFile = function(path, callback) {
 /**
  * Loads the given URL from the file system given a chrome:// URL.
  */
-bridge.loadFile = function(url, success, error) {
+sebuilder.loadFile = function(url, success, error) {
   var data = "";
   // Get rid of the random number get-string meant to discourage caching.
   if (url.match("[?]")) {
@@ -147,13 +147,13 @@ bridge.loadFile = function(url, success, error) {
   var prefix = "chrome://seleniumbuilder3/";
   var path = "chrome/" + url.substring(prefix.length);
   var MY_ID = "seleniumbuilder@sebuilder.com";
-  var file = null;
+  var theFile = null;
   Components.utils.import("resource://gre/modules/AddonManager.jsm");
   AddonManager.getAddonByID(MY_ID, function(addon) {
-    file = addon.getResourceURI(path).QueryInterface(Components.interfaces.nsIFileURL).file;
+    theFile = addon.getResourceURI(path).QueryInterface(Components.interfaces.nsIFileURL).file;
     var data = null;
     try {
-      data = bridge.readFile(file);
+      data = sebuilder.readFile(theFile);
     } catch (e) {
       error(e);
       return;
@@ -162,19 +162,19 @@ bridge.loadFile = function(url, success, error) {
   });
 };
 
-bridge.readPath = function(path) {
-  var file = Components.classes["@mozilla.org/file/local;1"]
+sebuilder.readPath = function(path) {
+  var theFile = Components.classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-  file.initWithPath(path);
-  return bridge.readFile(file);
+  theFile.initWithPath(path);
+  return sebuilder.readFile(theFile);
 }
 
-bridge.readFile = function(file) {
+sebuilder.readFile = function(theFile) {
   var fstream = Components.classes["@mozilla.org/network/file-input-stream;1"]
       .createInstance(Components.interfaces.nsIFileInputStream);
   var cstream = Components.classes["@mozilla.org/intl/converter-input-stream;1"]
       .createInstance(Components.interfaces.nsIConverterInputStream);
-  fstream.init(file, -1, 0, 0);
+  fstream.init(theFile, -1, 0, 0);
   cstream.init(fstream, "UTF-8", 0, 0); // you can use another encoding here if you wish
 
   var str = {};
@@ -188,17 +188,17 @@ bridge.readFile = function(file) {
   return data;
 };
 
-bridge.decodeBase64 = function(data) {
+sebuilder.decodeBase64 = function(data) {
   return window.atob(data);
 };
 
-bridge.writeBinaryFile = function(path, data) {
-  var file = Components.classes["@mozilla.org/file/local;1"]
+sebuilder.writeBinaryFile = function(path, data) {
+  var theFile = Components.classes["@mozilla.org/file/local;1"]
       .createInstance(Components.interfaces.nsILocalFile);
-  file.initWithPath(path);
+  theFile.initWithPath(path);
   var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
       .createInstance(Components.interfaces.nsIFileOutputStream);
-  outputStream.init(file, -1, -1, 0);
+  outputStream.init(theFile, -1, -1, 0);
   outputStream.write(data, data.length);
   outputStream.close();
 };
@@ -207,22 +207,22 @@ bridge.writeBinaryFile = function(path, data) {
 Components.utils.import('resource://gre/modules/Services.jsm');
 
 // Create a constructor for the builtin supports-string class.
-const nsSupportsString = Components.Constructor("@mozilla.org/supports-string;1", "nsISupportsString");
-function SupportsString(str) {
+sebuilder.nsSupportsString = Components.Constructor("@mozilla.org/supports-string;1", "nsISupportsString");
+sebuilder.SupportsString = function(str) {
   // Create an instance of the supports-string class
-  var res = nsSupportsString();
+  var res = sebuilder.nsSupportsString();
 
   // Store the JavaScript string that we want to wrap in the new nsISupportsString object
   res.data = str;
   return res;
-}
+};
 
 // Create a constructor for the builtin transferable class
-const nsTransferableConstructor = Components.Constructor("@mozilla.org/widget/transferable;1", "nsITransferable");
+sebuilder.nsTransferableConstructor = Components.Constructor("@mozilla.org/widget/transferable;1", "nsITransferable");
 
 // Create a wrapper to construct a nsITransferable instance and set its source to the given window, when necessary
-function Transferable(source) {
-  var res = nsTransferableConstructor();
+sebuilder.Transferable = function(source) {
+  var res = sebuilder.nsTransferableConstructor();
   if ('init' in res) {
     // When passed a Window object, find a suitable provacy context for it.
     if (source instanceof Ci.nsIDOMWindow) {
@@ -233,9 +233,9 @@ function Transferable(source) {
     res.init(source);
   }
   return res;
-}
+};
 
-bridge.getClipboardString = function() {
+sebuilder.getClipboardString = function() {
   var trans = Transferable();
   trans.addDataFlavor("text/unicode");
   Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
@@ -249,8 +249,8 @@ bridge.getClipboardString = function() {
   }
 };
 
-bridge.setClipboardString = function(dataString) {
-  var trans = Transferable(window);
+sebuilder.setClipboardString = function(dataString) {
+  var trans = sebuilder.Transferable(window);
   trans.addDataFlavor("text/unicode");
   // We multiply the length of the string by 2, since it's stored in 2-byte UTF-16
   // format internally.
@@ -258,27 +258,27 @@ bridge.setClipboardString = function(dataString) {
   Services.clipboard.setData(trans, null, Services.clipboard.kGlobalClipboard);
 };
 
-bridge.showFilePicker = function(window, title, mode, defaultDirPrefName, handler, defaultFileName) {
+sebuilder.showFilePicker = function(window, title, mode, defaultDirPrefName, handler, defaultFileName) {
   var nsIFilePicker = Components.interfaces.nsIFilePicker;
   var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
   fp.init(window, title, mode);
-  var defaultDir = bridge.prefManager.getCharPref(defaultDirPrefName, null);
+  var defaultDir = sebuilder.prefManager.getCharPref(defaultDirPrefName, null);
   if (defaultDir) {
-    fp.displayDirectory = bridge.SeFileUtils.getFile(defaultDir);
+    fp.displayDirectory = sebuilder.SeFileUtils.getFile(defaultDir);
   }
   if (defaultFileName) {
     fp.defaultString = defaultFileName;
   }
   var res = fp.show();
   if (res == nsIFilePicker.returnOK || res == nsIFilePicker.returnReplace) {
-    bridge.prefManager.setCharPref(defaultDirPrefName, fp.file.parent.path);
+    sebuilder.prefManager.setCharPref(defaultDirPrefName, fp.file.parent.path);
     return handler(fp);
   } else {
     return null;
   }
 };
 
-bridge.SeFileUtils = {
+sebuilder.SeFileUtils = {
   getProfileDir: function() {
     return Components.classes["@mozilla.org/file/directory_service;1"]
       .getService(Components.interfaces.nsIProperties)
@@ -301,15 +301,15 @@ bridge.SeFileUtils = {
     return unicodeConverter;
   },
   
-  openFileOutputStream: function(file) {
+  openFileOutputStream: function(theFile) {
     var stream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance(Components.interfaces.nsIFileOutputStream);
-    stream.init(file, 0x02 | 0x08 | 0x20, 420, 0);
+    stream.init(theFile, 0x02 | 0x08 | 0x20, 420, 0);
     return stream;
   },
 
-  openFileInputStream: function(file) {
+  openFileInputStream: function(theFile) {
     var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance(Components.interfaces.nsIFileInputStream);
-    stream.init(file, 0x01, 00004, 0);
+    stream.init(theFile, 0x01, 00004, 0);
     var sis = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
     sis.init(stream);
     return sis;
@@ -323,8 +323,8 @@ bridge.SeFileUtils = {
     return sis;
   },
 
-  readFile: function(file) {
-    var stream = this.openFileInputStream(file);
+  readFile: function(theFile) {
+    var stream = this.openFileInputStream(theFile);
     var content = stream.read(stream.available());
     stream.close();
     return content;
@@ -338,30 +338,30 @@ bridge.SeFileUtils = {
   },
 
   getFile: function(path) {
-    var file = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
-    file.initWithPath(path);
-    return file;
+    var theFile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+    theFile.initWithPath(path);
+    return theFile;
   },
 
-  fileURI: function(file) {
+  fileURI: function(theFile) {
     return Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService).
-      newFileURI(file).spec;
+      newFileURI(theFile).spec;
   },
 
-    splitPath: function(file) {
-        var max = 100;
-        var result = [];
-        var i = 0;
-        while (i < max && file && 
-               file.path != "/" &&
-               !file.path.match(/^[a-z]:$/i)) {
-            result.unshift(file.leafName);
-            if ("." == file.leafName || ".." == file.leafName) {
-                break;
-            }
-            file = file.parent;
-            i++;
-        }
-        return result;
+  splitPath: function(theFile) {
+    var max = 100;
+    var result = [];
+    var i = 0;
+    while (i < max && theFile && 
+       theFile.path != "/" &&
+       !theFile.path.match(/^[a-z]:$/i)) {
+      result.unshift(theFile.leafName);
+      if ("." == theFile.leafName || ".." == theFile.leafName) {
+        break;
+      }
+      theFile = theFile.parent;
+      i++;
     }
+    return result;
+  }
 };

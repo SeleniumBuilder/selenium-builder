@@ -241,7 +241,7 @@ function addNewStepAfter(afterStepID) {
 }
 
 function copyStep(stepID) {
-  bridge.setClipboardString(JSON.stringify(builder.getScript().getStepWithID(stepID).toJSON()));
+  sebuilder.setClipboardString(JSON.stringify(builder.getScript().getStepWithID(stepID).toJSON()));
 }
 
 function cutStep(stepID) {
@@ -250,7 +250,7 @@ function cutStep(stepID) {
 }
 
 function pasteStep(afterStepID) {
-  var text = bridge.getClipboardString();
+  var text = sebuilder.getClipboardString();
   if (!text) { return; }
   var script = builder.getScript();
   var newStep = builder.stepFromJSON(JSON.parse(text), script.seleniumVersion);
@@ -332,7 +332,7 @@ function startSearchers(stepID, pIndex) {
   attachSearchers(stepID, pIndex, true);
   // Keep on looking for new frames with no attached searchers.
   searcherInterval = setInterval(function() { attachSearchers(stepID, pIndex); }, 500, true);
-  window.bridge.focusRecordingTab();
+  window.sebuilder.focusRecordingTab();
 }
 
 /**
@@ -375,7 +375,7 @@ function attachSearchers(stepID, pIndex, force) {
             // Don't immediately stop searchers: this would cause the listener that prevents the
             // click from actually activating the selected element to be detached prematurely.
             setTimeout(stopSearchers, 1);
-            window.bridge.focusRecorderWindow();
+            window.sebuilder.focusRecorderWindow();
             builder.stepdisplay.updateStep(stepID);
             builder.suite.setCurrentScriptSaveRequired(true);
             // Update the edit-param view.

@@ -7,26 +7,26 @@
         <menuitem
             label="&runseleniumbuilder;"
             key="selenium-builder-run-key"
-            oncommand="bridge.boot()" />
+            oncommand="sebuilder.boot()" />
     </menupopup>
 
     <menupopup id="appmenu_webDeveloper_popup"> 
         <menuitem
             label="&runseleniumbuilder;"
             key="selenium-builder-run-key"
-            oncommand="bridge.boot()" />
+            oncommand="sebuilder.boot()" />
     </menupopup>
 
     <keyset>
         <key id="selenium-builder-run-key"
             modifiers="accel alt"
             key="B"
-            oncommand="bridge.boot()" />
+            oncommand="sebuilder.boot()" />
     </keyset>
 
     <popup id="contentAreaContextMenu">
         <menuitem id="selenium-builder-context-menu-launch"
             label="&runseleniumbuilder;"
-            oncommand="bridge.boot();" />
+            oncommand="sebuilder.boot();" />
     </popup>
 </overlay>

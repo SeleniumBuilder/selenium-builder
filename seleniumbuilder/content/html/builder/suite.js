@@ -80,7 +80,7 @@ builder.suite.setSuite = function(scripts, path, shareState) {
   builder.suite.path = path;
   builder.suite.broadcastScriptChange();
   builder.suite.shareState = !!shareState;
-  bridge.prefManager.setBoolPref("extensions.seleniumbuilder3.shareSuiteState", builder.suite.shareState);
+  sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.shareSuiteState", builder.suite.shareState);
   if (builder.suite.shareState) {
     jQuery('#run-share-state').text(_t('menu_dont_share_state_across_suite'));
   } else {

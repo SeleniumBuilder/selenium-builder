@@ -49,7 +49,7 @@ function makeRunEntry(run) {
 
 function makeViewResultLink(sid) {
   return newNode('a', {'class':"step-view", id:sid + "-view", style:"display: none", click: function(e) {
-    window.bridge.getRecordingWindow().location = this.href;
+    window.sebuilder.getRecordingWindow().location = this.href;
     // We don't actually want the SB window to navigate to the script's page!
     e.preventDefault();
   }}, _t('view_run_result'));

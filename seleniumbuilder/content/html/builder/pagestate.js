@@ -45,8 +45,8 @@ builder.registerPostLoadHook(function() {
   // allows for waitForPageToLoad events to be generated, for recorders to be attached to
   // newly opened pages, and for local playback to notice when it can go to the next step.
   builder.loadlistener.attach(
-      /* root window */ window.bridge.getRecordingWindow(),
-      /* window */ window.bridge.getRecordingWindow(),
+      /* root window */ window.sebuilder.getRecordingWindow(),
+      /* window */ window.sebuilder.getRecordingWindow(),
       /* load */ function(url) {
         builder.pageState.set(url, false);
       },

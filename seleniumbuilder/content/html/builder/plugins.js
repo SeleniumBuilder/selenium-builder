@@ -32,11 +32,11 @@ builder.plugins.shutdownFunctions = [];
 builder.plugins.bundledPlugins = [];
 
 builder.plugins.getGotoPluginsView = function() {
-  return bridge.prefManager.getBoolPref("extensions.seleniumbuilder3.plugins.gotoPluginsView");
+  return sebuilder.prefManager.getBoolPref("extensions.seleniumbuilder3.plugins.gotoPluginsView");
 };
 
 builder.plugins.setGotoPluginsView = function(b) {
-  bridge.prefManager.setBoolPref("extensions.seleniumbuilder3.plugins.gotoPluginsView", b);
+  sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.plugins.gotoPluginsView", b);
 };
 
 /**
@@ -90,20 +90,20 @@ builder.plugins.isUpdateable = function(info) {
   if (!info.installedInfo || !info.repositoryInfo) {
     return false;
   }
-  if (!info.repositoryInfo.browsers[bridge.browserType()]) {
+  if (!info.repositoryInfo.browsers[sebuilder.browserType()]) {
     return false;
   }
-  return !builder.plugins.checkMaxVersion(info.installedInfo.pluginVersion, info.repositoryInfo.browsers[bridge.browserType()].pluginVersion);
+  return !builder.plugins.checkMaxVersion(info.installedInfo.pluginVersion, info.repositoryInfo.browsers[sebuilder.browserType()].pluginVersion);
 };
 
 builder.plugins.isPluginTooNew = function(info) {
-  info = info.repositoryInfo.browsers[bridge.browserType()];
+  info = info.repositoryInfo.browsers[sebuilder.browserType()];
   if (!info) { return false; }
   return info.builderMinVersion && !builder.plugins.checkMinVersion(info.builderMinVersion + "", builder.version);
 };
 
 builder.plugins.isPluginTooOld = function(info) {
-  info = info.repositoryInfo.browsers[bridge.browserType()];
+  info = info.repositoryInfo.browsers[sebuilder.browserType()];
   if (!info) { return false; }
   return info.builderMaxVersion && !builder.plugins.checkMaxVersion(info.builderMaxVersion + "", builder.version);
 };
@@ -163,7 +163,7 @@ builder.plugins.getInstalledInfo = function(id) {
     var f = builder.plugins.getDirForPlugin(id);
     f.append("header.json");
     if (f.isFile()) {
-      return JSON.parse(bridge.readFile(f));
+      return JSON.parse(sebuilder.readFile(f));
     }
   } catch (e) {
     return null;
@@ -264,7 +264,7 @@ builder.plugins.getRemoteListAsync = function(callback) {
     type: "GET",
     cache: false,
     dataType: "json",
-    url: bridge.pluginRepository() + "?" + Math.random(),
+    url: sebuilder.pluginRepository() + "?" + Math.random(),
     success: function(data) {
       if (loadTimedOut) { return; }
       loadSucceeded = true;
@@ -273,7 +273,7 @@ builder.plugins.getRemoteListAsync = function(callback) {
       } else {
         var result = [];
         for (var i = 0; i < data.plugins.length; i++) {
-          if (data.plugins[i].browsers[bridge.browserType()]) {
+          if (data.plugins[i].browsers[sebuilder.browserType()]) {
             result.push(data.plugins[i]);
           }
         }
@@ -375,7 +375,7 @@ builder.plugins.validatePlugin = function(id, f) {
     if (!f.isFile()) {
       return _t('plugin_header_not_file', f.path);
     }
-    var fileData = bridge.readFile(f);
+    var fileData = sebuilder.readFile(f);
     var header = null;
     try {
       header = JSON.parse(fileData);
@@ -459,7 +459,7 @@ builder.plugins.performUninstall = function(id) {
 };
 
 builder.plugins.start = function(callback) {
-  bridge.getInternalFile("/chrome/content/html/js/builder/bundledPlugins/", function(bundledPluginsDir) {
+  sebuilder.getInternalFile("/chrome/content/html/js/builder/bundledPlugins/", function(bundledPluginsDir) {
     builder.plugins.start_2(callback, bundledPluginsDir);
   });
 };

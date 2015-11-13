@@ -72,7 +72,7 @@ builder.VerifyExplorer.prototype = {
     if (this.justReturnLocator) { this.recordStep(locator); return; }
 
     var tag = e.target.nodeName.toUpperCase();
-    var selection = window.bridge.getRecordingWindow().getSelection();
+    var selection = window.sebuilder.getRecordingWindow().getSelection();
 
     if (selection && selection.toString().trim().length > 0) {
       this.recordStep(new builder.Step(builder.selenium2.stepTypes.verifyTextPresent,

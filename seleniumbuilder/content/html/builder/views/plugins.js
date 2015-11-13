@@ -28,7 +28,7 @@ builder.views.plugins.getName = function(info) {
   if (info.installedInfo) {
     return info.installedInfo.name + " " + info.installedInfo.pluginVersion;
   } else {
-    return info.repositoryInfo.name + " " + info.repositoryInfo.browsers[bridge.browserType()].pluginVersion;
+    return info.repositoryInfo.name + " " + info.repositoryInfo.browsers[sebuilder.browserType()].pluginVersion;
   }
 };
 
@@ -66,11 +66,11 @@ builder.views.plugins.getStatus = function(info) {
   }
   if (builder.plugins.isUpdateable(info)) {
     if (builder.plugins.isPluginTooNew(info)) {
-      state += _t('cant_update_builder_too_old', info.repositoryInfo.browsers[bridge.browserType()].pluginVersion);
+      state += _t('cant_update_builder_too_old', info.repositoryInfo.browsers[sebuilder.browserType()].pluginVersion);
     } else if (builder.plugins.isPluginTooOld(info)) {
-      state += _t('cant_update_builder_too_new', info.repositoryInfo.browsers[bridge.browserType()].pluginVersion);
+      state += _t('cant_update_builder_too_new', info.repositoryInfo.browsers[sebuilder.browserType()].pluginVersion);
     } else {
-      state += _t('plugin_update_available', info.repositoryInfo.browsers[bridge.browserType()].pluginVersion);
+      state += _t('plugin_update_available', info.repositoryInfo.browsers[sebuilder.browserType()].pluginVersion);
     }
   }
   return state;
@@ -145,7 +145,7 @@ builder.views.plugins.wirePluginEntry = function(info) {
     builder.plugins.setInstallState(info.identifier, builder.plugins.TO_INSTALL);
     info.installState = builder.plugins.TO_INSTALL;
     builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[bridge.browserType()].downloadUrl, function() {
+    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
       builder.plugins.setGotoPluginsView(true);
       builder.reboot();
     });
@@ -165,7 +165,7 @@ builder.views.plugins.wirePluginEntry = function(info) {
     builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UPDATE);
     info.installState = builder.plugins.TO_UPDATE;
     builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[bridge.browserType()].downloadUrl, function() {
+    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
       builder.plugins.setGotoPluginsView(true);
       builder.reboot();
     });

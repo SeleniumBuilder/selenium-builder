@@ -25,7 +25,7 @@ builder.datasource.json.fetchRows = function(config, script, callback, failure) 
             // Local absolute path
             var result = null;
             try {
-              result = JSON.parse(bridge.readPath(config.path));
+              result = JSON.parse(sebuilder.readPath(config.path));
             } catch (e) {
               failure(_t('unable_to_load_file', config.path));
             }
@@ -37,7 +37,7 @@ builder.datasource.json.fetchRows = function(config, script, callback, failure) 
   } else {
     var result = null;
     try {
-      result = JSON.parse(bridge.readPath(config.path));
+      result = JSON.parse(sebuilder.readPath(config.path));
     } catch (e) {
       failure(_t('unable_to_load_file', config.path));
     }

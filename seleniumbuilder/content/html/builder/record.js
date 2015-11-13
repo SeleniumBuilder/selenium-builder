@@ -27,16 +27,16 @@ builder.record.verifyExplore = function() {
   builder.record.verifyExploring = true;
   builder.record.stop();
   jQuery('#record-panel').show();
-  window.bridge.focusRecordingTab();
+  window.sebuilder.focusRecordingTab();
   builder.record.verifyExplorer = new builder.VerifyExplorer(
-    window.bridge.getRecordingWindow(),
+    window.sebuilder.getRecordingWindow(),
     builder.getScript().seleniumVersion,
     function(step) {
       builder.record.recordStep(step);
       // Don't immediately stop: this would cause the listener that prevents the click from
       // actually activating the selected element to be detached prematurely.
       setTimeout(function() { builder.record.stopVerifyExploring(); }, 1);
-      window.bridge.focusRecorderWindow();
+      window.sebuilder.focusRecorderWindow();
     }
   );
 };
@@ -94,7 +94,7 @@ builder.record.continueRecording = function(insertionIndex) {
   
   builder.record.lastRecordedStep = null;
   
-  builder.record.recorder = builder.getScript().seleniumVersion.getRecorder(window.bridge.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
+  builder.record.recorder = builder.getScript().seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
   
   builder.record.recording = true;
   
@@ -112,11 +112,11 @@ builder.record.continueRecording = function(insertionIndex) {
         // this now.
         var ls = script.getLastStep();
         if (ls && (ls.type === script.seleniumVersion.navigateToUrlStepType) && (ls.url || "") === "") {
-          ls.url = window.bridge.getRecordingWindow().location + "";
+          ls.url = window.sebuilder.getRecordingWindow().location + "";
           builder.stepdisplay.update();
         }
       
-        builder.record.recorder = script.seleniumVersion.getRecorder(window.bridge.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
+        builder.record.recorder = script.seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
       }
       isLoading = false;
     }
@@ -165,7 +165,7 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
     }
   };
   builder.pageState.addListener(builder.record.pageLoadListener);
-  window.bridge.getRecordingWindow().location = url.href();
+  window.sebuilder.getRecordingWindow().location = url.href();
 };
 
 

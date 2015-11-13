@@ -53,15 +53,15 @@ builder.selenium2.io.jsonToLoc = function(jsonO) {
 builder.selenium2.io.loadScriptJSON = function(path) {
   var file = null;
   if (path == null) {
-    file = bridge.showFilePicker(window, _t('select_a_file'), 
+    file = sebuilder.showFilePicker(window, _t('select_a_file'), 
         Components.interfaces.nsIFilePicker.modeOpen,
         "extensions.seleniumbuilder3.loadSavePath",
         function(fp) { return fp.file; });
   } else {
-    file = bridge.SeFileUtils.getFile(path);
+    file = sebuilder.SeFileUtils.getFile(path);
   }
-  var sis = bridge.SeFileUtils.openFileInputStream(file);
-  var script = JSON.parse(bridge.SeFileUtils.getUnicodeConverter('UTF-8').ConvertToUnicode(sis.read(sis.available())));
+  var sis = sebuilder.SeFileUtils.openFileInputStream(file);
+  var script = JSON.parse(sebuilder.SeFileUtils.getUnicodeConverter('UTF-8').ConvertToUnicode(sis.read(sis.available())));
   sis.close();
   script.path = {
     where: "local",
@@ -90,19 +90,19 @@ builder.selenium2.io.saveScriptWithParams = function(script, format, path, param
   try {
     var file = null;
     if (path == null) {
-      file = bridge.showFilePicker(window, _t('save_as'),
+      file = sebuilder.showFilePicker(window, _t('save_as'),
           Components.interfaces.nsIFilePicker.modeSave,
           "extensions.seleniumbuilder3.loadSavePath",
           function(fp) { return fp.file; },
           format.extension);
     } else {
-      file = bridge.SeFileUtils.getFile(path);
+      file = sebuilder.SeFileUtils.getFile(path);
     }
     if (file != null) {
       var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"].
           createInstance(Components.interfaces.nsIFileOutputStream);
       outputStream.init(file, 0x02 | 0x08 | 0x20, 0644, 0);
-      var converter = bridge.SeFileUtils.getUnicodeConverter('UTF-8');
+      var converter = sebuilder.SeFileUtils.getUnicodeConverter('UTF-8');
       var text = converter.ConvertFromUnicode(format.format(script, file.leafName, params));
       outputStream.write(text, text.length);
       var fin = converter.Finish();
@@ -375,18 +375,18 @@ builder.selenium2.io.saveSuiteAsFormat = function(format, scripts, path) {
   try {
     var file = null;
     if (path == null) {
-      file = bridge.showFilePicker(window, _t('save_as'),
+      file = sebuilder.showFilePicker(window, _t('save_as'),
           Components.interfaces.nsIFilePicker.modeSave,
           "extensions.seleniumbuilder3.loadSavePath",
           function(fp) { return fp.file; },
           format.extension);
     } else {
-      file = bridge.SeFileUtils.getFile(path.path);
+      file = sebuilder.SeFileUtils.getFile(path.path);
     }
     if (file != null) {
       var outputStream = Components.classes["@mozilla.org/network/file-output-stream;1"].createInstance( Components.interfaces.nsIFileOutputStream);
       outputStream.init(file, 0x02 | 0x08 | 0x20, 0644, 0);
-      var converter = bridge.SeFileUtils.getUnicodeConverter('UTF-8');
+      var converter = sebuilder.SeFileUtils.getUnicodeConverter('UTF-8');
       var path = { 'path': file.path, 'where': 'local', 'format': format };
       var text = converter.ConvertFromUnicode(format.format(scripts, path));
       outputStream.write(text, text.length);

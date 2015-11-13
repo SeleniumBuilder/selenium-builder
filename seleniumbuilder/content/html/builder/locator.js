@@ -151,7 +151,7 @@ builder.locator.prevHighlightOriginalStyle = null;
 
 builder.locator.deHighlight = function(callback) {
   if (!builder.locator.prevHighlightMethod) { callback(); return; }
-  var win = window.bridge.getRecordingWindow();
+  var win = window.sebuilder.getRecordingWindow();
   var node = builder.locator.locateElement(win, builder.locator.prevHighlightMethod, builder.locator.prevHighlightValue);
   if (node) {
     node.style.border = builder.locator.prevHighlightOriginalStyle;
@@ -161,11 +161,11 @@ builder.locator.deHighlight = function(callback) {
 };
 
 builder.locator.highlight = function(method, value) {
-  bridge.focusRecordingTab();
+  sebuilder.focusRecordingTab();
   builder.locator.deHighlight(function() {
     builder.locator.prevHighlightMethod = method;
     builder.locator.prevHighlightValue = value;
-    var win = window.bridge.getRecordingWindow();
+    var win = window.sebuilder.getRecordingWindow();
     var node = builder.locator.locateElement(win, method, value);
     if (node) {
       builder.locator.prevHighlightOriginalStyle = node.style.border;
@@ -400,7 +400,7 @@ function getHtmlXPath(node) {
   if (nodeName === "html") {
     return "//html";
   }
-  var parent = getMyXPath(node.parentNode, window.bridge.getRecordingWindow().document);
+  var parent = getMyXPath(node.parentNode, window.sebuilder.getRecordingWindow().document);
 
   if (parent.indexOf("']") > -1) {
 
@@ -410,7 +410,7 @@ function getHtmlXPath(node) {
 
     // Attempt to key on the text content of the node for extra precision.
     if (text && text.length < 30) {
-      var win = window.bridge.getRecordingWindow();
+      var win = window.sebuilder.getRecordingWindow();
       var attempt = parent.substr(0, parent.indexOf("']") + 2) + "//" + nodeName;
       // If the text contains whitespace characters that aren't spaces, we convert any
       // runs of whitespace into single spaces and trim off the ends, then use the
@@ -442,7 +442,7 @@ function hasNonstandardWhitespace(text) {
  * Uses the given locator to find the node it identifies. 
  */
 function findNode(locatorType, locator) {
-  return builder.locator.locateElement(window.bridge.getRecordingWindow(), locatorType, locator);
+  return builder.locator.locateElement(window.sebuilder.getRecordingWindow(), locatorType, locator);
 }
 
 /** Function from global.js in Windmill, licensed under Apache 2.0. */
