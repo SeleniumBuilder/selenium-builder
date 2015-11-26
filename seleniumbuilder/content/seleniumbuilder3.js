@@ -236,7 +236,7 @@ sebuilder.Transferable = function(source) {
 };
 
 sebuilder.getClipboardString = function() {
-  var trans = Transferable();
+  var trans = sebuilder.Transferable();
   trans.addDataFlavor("text/unicode");
   Services.clipboard.getData(trans, Services.clipboard.kGlobalClipboard);
   var str       = {};
@@ -254,7 +254,7 @@ sebuilder.setClipboardString = function(dataString) {
   trans.addDataFlavor("text/unicode");
   // We multiply the length of the string by 2, since it's stored in 2-byte UTF-16
   // format internally.
-  trans.setTransferData("text/unicode", SupportsString(dataString), dataString.length * 2);
+  trans.setTransferData("text/unicode", sebuilder.SupportsString(dataString), dataString.length * 2);
   Services.clipboard.setData(trans, null, Services.clipboard.kGlobalClipboard);
 };
 
