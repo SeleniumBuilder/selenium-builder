@@ -142,51 +142,56 @@ builder.views.plugins.wirePluginEntry = function(info) {
   jQuery('#' + info.identifier + '-install-and-reboot').click(function() {
     var license = builder.views.plugins.getLicense(info);
     if (license && !confirm(license)) { return; }
-    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_INSTALL);
-    info.installState = builder.plugins.TO_INSTALL;
-    builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
-      builder.plugins.setGotoPluginsView(true);
-      builder.reboot();
+    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_INSTALL, function() {
+      info.installState = builder.plugins.TO_INSTALL;
+      builder.views.plugins.updatePluginEntry(info);
+      builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
+        builder.plugins.setGotoPluginsView(true);
+        builder.reboot();
+      });
     });
   });
   
   jQuery('#' + info.identifier + '-uninstall-and-reboot').click(function() {
-    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UNINSTALL);
-    info.installState = builder.plugins.TO_UNINSTALL;
-    builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.setGotoPluginsView(true);
-    builder.reboot();
+    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UNINSTALL, function() {
+      info.installState = builder.plugins.TO_UNINSTALL;
+      builder.views.plugins.updatePluginEntry(info);
+      builder.plugins.setGotoPluginsView(true);
+      builder.reboot();
+    });
   });
   
   jQuery('#' + info.identifier + '-update-and-reboot').click(function() {
     var license = builder.views.plugins.getLicense(info);
     if (license && !confirm(license)) { return; }
-    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UPDATE);
-    info.installState = builder.plugins.TO_UPDATE;
-    builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
-      builder.plugins.setGotoPluginsView(true);
-      builder.reboot();
+    builder.plugins.setInstallState(info.identifier, builder.plugins.TO_UPDATE, function() {
+      info.installState = builder.plugins.TO_UPDATE;
+      builder.views.plugins.updatePluginEntry(info);
+      builder.plugins.performDownload(info.identifier, info.repositoryInfo.browsers[sebuilder.browserType()].downloadUrl, function() {
+        builder.plugins.setGotoPluginsView(true);
+        builder.reboot();
+      });
     });
   });
   
   jQuery('#' + info.identifier + '-enable-and-reboot').click(function() {
     var newEnabled = info.enabledState == builder.plugins.DISABLED ? builder.plugins.TO_ENABLE : builder.plugins.ENABLED;
-    builder.plugins.setEnabledState(info.identifier, newEnabled);
-    info.enabledState = newEnabled;
-    builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.setGotoPluginsView(true);
-    builder.reboot();
+    builder.plugins.setEnabledState(info.identifier, newEnabled, function() {
+      info.enabledState = newEnabled;
+      builder.views.plugins.updatePluginEntry(info);
+      builder.plugins.setGotoPluginsView(true);
+      builder.reboot();
+    });
   });
   
   jQuery('#' + info.identifier + '-disable-and-reboot').click(function() {
     var newEnabled = info.enabledState == builder.plugins.ENABLED ? builder.plugins.TO_DISABLE : builder.plugins.DISABLED;
-    builder.plugins.setEnabledState(info.identifier, newEnabled);
-    info.enabledState = newEnabled;
-    builder.views.plugins.updatePluginEntry(info);
-    builder.plugins.setGotoPluginsView(true);
-    builder.reboot();
+    builder.plugins.setEnabledState(info.identifier, newEnabled, function() {
+      info.enabledState = newEnabled;
+      builder.views.plugins.updatePluginEntry(info);
+      builder.plugins.setGotoPluginsView(true);
+      builder.reboot();
+    });
   });
 }
 

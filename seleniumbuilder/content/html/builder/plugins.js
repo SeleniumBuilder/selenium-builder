@@ -31,6 +31,9 @@ builder.plugins.shutdownFunctions = [];
 // List of {"id":, "version"} objects.
 builder.plugins.bundledPlugins = [];
 
+// List of files to load in.
+builder.plugins.toLoad = [];
+
 builder.plugins.getGotoPluginsView = function() {
   return sebuilder.prefManager.getBoolPref("extensions.seleniumbuilder3.plugins.gotoPluginsView");
 };
@@ -45,44 +48,48 @@ builder.plugins.setGotoPluginsView = function(b) {
 builder.plugins.getListAsync = function(callback) {
   builder.plugins.getRemoteListAsync(function(repoList, error) {
     if (error) { callback(null, error); return; }
-    var installedList = builder.plugins.getInstalledIDs();
-    var repoMap = {};
-    if (repoList) {
-      for (var i = 0; i < repoList.length; i++) {
-        repoMap[repoList[i].identifier] = repoList[i];
+    builder.plugins.getInstalledIDs(function(installedList) {
+      var repoMap = {};
+      if (repoList) {
+        for (var i = 0; i < repoList.length; i++) {
+          repoMap[repoList[i].identifier] = repoList[i];
+        }
       }
-    }
-    var installedMap = {};
-    for (var i = 0; i < installedList.length; i++) {
-      installedMap[installedList[i]] = true;
-    }
-    var result = [];
-    // Add all installed plugins.
-    for (var i = 0; i < installedList.length; i++) {
-      var id = installedList[i];
-      var line = builder.plugins.getState(id);
-      line.identifier = id;
-      line.installedInfo = builder.plugins.getInstalledInfo(id);
-      if (repoMap[id]) {
-        line.repositoryInfo = repoMap[id];
+      var installedMap = {};
+      for (var i = 0; i < installedList.length; i++) {
+        installedMap[installedList[i]] = true;
       }
-      result.push(line);
-    }
-    
-    // Add all non-installed plugins.
-    for (var i = 0; i < repoList.length; i++) {
-      var id = repoList[i].identifier;
-      if (installedMap[id]) { continue; }
-      result.push({
-        "identifier": id,
-        "installState": builder.plugins.NOT_INSTALLED,
-        "enabledState": builder.plugins.ENABLED,
-        "installedInfo": null,
-        "repositoryInfo": repoList[i]
-      });
-    }
-    
-    callback(result, error);
+      var result = [];
+      
+      // Add all installed plugins.
+      builder.plugins.promiseLoop(installedList, function(id, done) {
+        builder.plugins.getState(id, function(line) {
+          line.identifier = id;
+          line.installedInfo = builder.plugins.getInstalledInfo(id);
+          if (repoMap[id]) {
+            line.repositoryInfo = repoMap[id];
+          }
+          result.push(line);
+          done();
+        });
+      })
+      .then(function() {
+        // Add all non-installed plugins.
+        for (var i = 0; i < repoList.length; i++) {
+          var id = repoList[i].identifier;
+          if (installedMap[id]) { continue; }
+          result.push({
+            "identifier": id,
+            "installState": builder.plugins.NOT_INSTALLED,
+            "enabledState": builder.plugins.ENABLED,
+            "installedInfo": null,
+            "repositoryInfo": repoList[i]
+          });
+        }
+        
+        callback(result, error);
+      }, function(error) { alert("start_2 uninstall DB error " + error ); });
+    });
   });
 };
 
@@ -132,30 +139,30 @@ builder.plugins.getPluginsDir = function() {
   return f;
 };
 
-builder.plugins.getInstalledIDs = function() {
-  var result = [];
-  var toInstall = {};
-  var s = null;
-  try {
-    s = builder.plugins.db.createStatement("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_INSTALL + "'");
-    while (s.executeStep()) {
-      result.push(s.row.identifier);
-      toInstall[s.row.identifier] = true;
+builder.plugins.getInstalledIDs = function(done) {
+  builder.plugins.db.execute("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_INSTALL + "'").then(function(toInstallRows) {
+    for (var i = 0; i < toInstallRows.length; i++) {
+      var id = toInstallRows[i].getResultByIndex(0);
+      result.push(id);
+      toInstall[id] = true;
     }
-  } finally {try {s.finalize();} catch(e) {}}
-  var f = builder.plugins.getPluginsDir();
-  var en = f.directoryEntries;
-  while (en.hasMoreElements()) {
-    var child = en.getNext();
-    var leafName = child.QueryInterface(Components.interfaces.nsIFile).leafName;
-    if (child.QueryInterface(Components.interfaces.nsIFile).isHidden()) {
-      continue;
+    var result = [];
+    var toInstall = {};
+    var f = builder.plugins.getPluginsDir();
+    var en = f.directoryEntries;
+    while (en.hasMoreElements()) {
+      var child = en.getNext();
+      var leafName = child.QueryInterface(Components.interfaces.nsIFile).leafName;
+      if (child.QueryInterface(Components.interfaces.nsIFile).isHidden()) {
+        continue;
+      }
+      if (!toInstall[leafName] && builder.plugins.isValidID(leafName)) {
+        result.push(leafName);
+      }
     }
-    if (!toInstall[leafName] && builder.plugins.isValidID(leafName)) {
-      result.push(leafName);
-    }
-  }
-  return result;
+    done(result);
+  },
+  function(error) { alert("getInstalledIDs DB error " + error ); });
 };
 
 builder.plugins.getInstalledInfo = function(id) {
@@ -170,60 +177,51 @@ builder.plugins.getInstalledInfo = function(id) {
   }
 };
 
-builder.plugins.setInstallState = function(id, installState) {
-  try {
-    var s = builder.plugins.db.createStatement("SELECT * FROM state WHERE identifier = :identifier");
-    s.params.identifier = id;
-    if (s.executeStep()) {
-      s.finalize();
-      s = builder.plugins.db.createStatement("UPDATE state SET installState = :installState WHERE identifier = :identifier");
-      s.params.identifier = id;
-      s.params.installState = installState; 
-      s.executeStep();
+builder.plugins.setInstallState = function(id, installState, done) {
+  builder.plugins.db.execute("SELECT * FROM state WHERE identifier = :identifier", [{"identifier": id}])
+  .then(function(resultRows) {
+    if (resultRows.length != 0) {
+      builder.plugins.db.execute("UPDATE state SET installState = :installState WHERE identifier = :identifier", [{"identifier": id, "installState": installState}])
+      .then(done,
+      function(error) { alert("setInstallState update DB error " + error ); });
     } else {
-      s.finalize();
-      s = builder.plugins.db.createStatement("INSERT INTO state VALUES (:identifier, :installState, :enabledState)");
-      s.params.identifier = id;
-      s.params.installState = installState;
-      s.params.enabledState = builder.plugins.ENABLED; 
-      s.executeStep();
+      builder.plugins.db.execute("INSERT INTO state VALUES (:identifier, :installState, :enabledState)", [{"identifier": id, "installState": installState, "enabledState": builder.plugins.ENABLED}])
+      .then(done,
+      function(error) { alert("setInstallState insert DB error " + error ); });
     }
-  } finally { s.finalize(); }
+  },
+  function(error) { alert("setInstallState get DB error " + error ); });
 };
 
-builder.plugins.setEnabledState = function(id, enabledState) {
-  try {
-    var s = builder.plugins.db.createStatement("SELECT * FROM state WHERE identifier = :identifier");
-    s.params.identifier = id;
-    if (s.executeStep()) {
-      s.finalize();
-      s = builder.plugins.db.createStatement("UPDATE state SET enabledState = :enabledState WHERE identifier = :identifier");
-      s.params.identifier = id;
-      s.params.enabledState = enabledState; 
-      s.executeStep();
+builder.plugins.setEnabledState = function(id, enabledState, done) {
+  builder.plugins.db.execute("SELECT * FROM state WHERE identifier = :identifier", [{"identifier": id}])
+  .then(function(resultRows) {
+    if (resultRows.length != 0) {
+      builder.plugins.db.execute("UPDATE state SET enabledState = :enabledState WHERE identifier = :identifier", [{"identifier": id, "enabledState": enabledState}])
+      .then(done,
+      function(error) { alert("setEnabledState update DB error " + error ); });
     } else {
-      s.finalize();
-      s = builder.plugins.db.createStatement("INSERT INTO state VALUES (:identifier, :installState, :enabledState)");
-      s.params.identifier = id;
-      s.params.installState = builder.plugins.INSTALLED;
-      s.params.enabledState = enabledState; 
-      s.executeStep();
+      builder.plugins.db.execute("INSERT INTO state VALUES (:identifier, :installState, :enabledState)", [{"identifier": id, "installState": builder.plugins.INSTALLED, "enabledState": enabledState}])
+      .then(done,
+      function(error) { alert("setEnabledState insert DB error " + error ); });
     }
-  } finally { s.finalize(); }
+  },
+  function(error) { alert("setEnabledState get DB error " + error ); });
 };
 
 /** @return The state of an installed plugin. */
-builder.plugins.getState = function(id) {
-  try {
-    var s = builder.plugins.db.createStatement("SELECT * FROM state WHERE identifier = :identifier");
-    s.params.identifier = id;
-    if (s.executeStep()) { // qqDPS Synchronous API usage, naughty.
-      return {"installState": s.row.installState, "enabledState": s.row.enabledState};
-    } else {
+builder.plugins.getState = function(id, done) {
+  builder.plugins.db.execute("SELECT * FROM state WHERE identifier = :identifier", [{"identifier": id}])
+  .then(function(resultRows) {
+    if (resultRows.length == 0) {
       // We have no record of it, so keep it as default.
-      return {"installState": builder.plugins.INSTALLED, "enabledState": builder.plugins.ENABLED};
+      done({"installState": builder.plugins.INSTALLED, "enabledState": builder.plugins.ENABLED});
+    } else {
+      var row = resultRows[0];
+      done({"installState": row.getResultByName("installState"), "enabledState": row.getResultByName("enabledState")});
     }
-  } finally { s.finalize(); }
+  },
+  function(error) { alert("getState get DB error " + error ); });
 };
 
 builder.plugins.pluginExists = function(id) {
@@ -356,12 +354,13 @@ builder.plugins.downloadSucceeded = function(id) {
 
 builder.plugins.downloadFailed = function(id, e) {
   alert(_t('plugin_download_failed') + (e ? ("\n" + e) : ""));
-  builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED);
   builder.plugins.downloadingCount--;
   if (builder.plugins.downloadingCount == 0) {
     jQuery('#plugins-downloading').hide();
   }
-  builder.views.plugins.refresh();
+  builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED, function() {
+    builder.views.plugins.refresh();
+  });
 };
 
 builder.plugins.validatePlugin = function(id, f) {
@@ -400,12 +399,12 @@ builder.plugins.validatePlugin = function(id, f) {
   return null;
 };
 
-builder.plugins.performInstall = function(id, customZipF) {
+builder.plugins.performInstall = function(id, customZipF, done) {
   try {
     var zipF = customZipF ? customZipF : builder.plugins.getZipForPlugin(id);
     if (!zipF.exists()) {
       builder.plugins.startupErrors.push(_t('plugin_unable_to_install', id, _t('plugin_download_failed')));
-      builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED);
+      builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED, done);
       return;
     }
     var installD = builder.plugins.getDirForPlugin(id);
@@ -435,26 +434,31 @@ builder.plugins.performInstall = function(id, customZipF) {
     var validationError = builder.plugins.validatePlugin(id, builder.plugins.getExtractForPlugin(id));
     if (validationError) {
       builder.plugins.startupErrors.push(_t('plugin_unable_to_install', id, "" + validationError));
-      builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED);
+      builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED, done);
       return;
     }
   
     try { installD.remove(true); } catch (e) {} // qqDPS
     builder.plugins.getExtractForPlugin(id).moveTo(installD.parent, installD.leafName);
-    builder.plugins.setInstallState(id, builder.plugins.INSTALLED);
-    builder.plugins.setEnabledState(id, builder.plugins.ENABLED);
+    builder.plugins.setInstallState(id, builder.plugins.INSTALLED, function() {
+      builder.plugins.setEnabledState(id, builder.plugins.ENABLED, done);
+    });
   } catch (e) {
     builder.plugins.startupErrors.push(_t('plugin_unable_to_install', id, "" + e));
-    builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED);
+    builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED, done);
   }
 };
 
-builder.plugins.performUninstall = function(id) {
+builder.plugins.performUninstall = function(id, done) {
   try {
-    builder.plugins.getDirForPlugin(id).remove(true);
-    builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED);
+    var f = builder.plugins.getDirForPlugin(id);
+    if (f.exists()) {
+      f.remove(true);
+    }
+    builder.plugins.setInstallState(id, builder.plugins.NOT_INSTALLED, done);
   } catch (e) {
-    builder.plugins.startupErrors.push(_t('plugin_unable_to_uninstall', id, e));
+    builder.plugins.startupErrors.push(_t('plugin_unable_to_uninstall', id, "" + e));
+    done();
   }
 };
 
@@ -464,116 +468,149 @@ builder.plugins.start = function(callback) {
   });
 };
 
+builder.plugins.promiseLoop = function(l, stepF) {
+  return new Promise(function(resolve, reject) {
+    function step(i, l, stepF) {
+      if (i >= l.length) {
+        resolve(l);
+      } else {
+        stepF(l[i], function() {
+          step(i + 1, l, stepF);
+        });
+      }
+    }
+    step(0, l, stepF);
+  });
+};
+
 builder.plugins.start_2 = function(callback, bundledPluginsDir) {
-  // Start up database connection.
-  Components.utils.import("resource://gre/modules/Services.jsm");
+  builder.plugins.toLoad = [];
+  // Start up database connection and ensure table exists.
+  Components.utils.import("resource://gre/modules/Sqlite.jsm");
   var dbFile = builder.plugins.getBuilderDir();
   dbFile.append("plugins.sqlite");
-  builder.plugins.db = Services.storage.openDatabase(dbFile); // Will also create the file if it does not exist
-  // Create the "state" table if it doesn't exist yet.
-  var s = null;
-  try {
-    s = builder.plugins.db.createStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='state'");
-    if (!s.executeStep()) {
-      s.finalize();
-      s = builder.plugins.db.createStatement("CREATE TABLE state (identifier varchar(255), installState varchar(255), enabledState varchar(255))");
-      s.executeStep();
+  Sqlite.openConnection({ 'path': dbFile.path })
+  .then(function(connection) {
+    dump("SB: opened plugin DB connection\n");
+    builder.plugins.db = connection;
+    return builder.plugins.db.tableExists('state');
+  }, function(error) { alert("start_2 tableExists DB error " + error ); })
+  .then(function(exists) {
+    dump("SB: check plugin table exists\n");
+    if (exists) {
+      return;
+    } else {
+      return builder.plugins.db.execute("CREATE TABLE state (identifier varchar(255), installState varchar(255), enabledState varchar(255))");
     }
-  } finally { s.finalize(); }
-  
-  // Install bundled plugins.
-  for (var i = 0; i < builder.plugins.bundledPlugins.length; i++) {
-    var id = builder.plugins.bundledPlugins[i].id;
-    var version = builder.plugins.bundledPlugins[i].version;
-    var isUpdate = true;
-    try {
-      isUpdate = !builder.plugins.checkMaxVersion(builder.plugins.getInstalledInfo(id).pluginVersion, version);
-    } catch (e) {
-      // Ignore
-    }
-    if ((!builder.plugins.pluginExists(id) || isUpdate) && builder.plugins.getState(id).installState != builder.plugins.TO_INSTALL) {
-      var zipF = bundledPluginsDir.clone();
-      zipF.append(id + ".zip");
-      builder.plugins.performInstall(id, zipF);
-      builder.plugins.setEnabledState(id, builder.plugins.ENABLED);
-    }
-  }
-    
-  // Install new plugins.
-  var to_install = [];
-  try {
-    s = builder.plugins.db.createStatement("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_INSTALL + "'");
-    while (s.executeStep()) {
-      to_install.push(s.row.identifier);
-    }
-  } finally { s.finalize(); }
-  for (var i = 0; i < to_install.length; i++) {
-    builder.plugins.performInstall(to_install[i]);
-    builder.plugins.setEnabledState(to_install[i], builder.plugins.ENABLED);
-  }
-  
-  // Update plugins
-  var to_update = [];
-  try {
-    s = builder.plugins.db.createStatement("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_UPDATE + "'");
-    while (s.executeStep()) {
-      to_update.push(s.row.identifier);
-    }
-  } finally { s.finalize(); }
-  for (var i = 0; i < to_update.length; i++) {
-    builder.plugins.performInstall(to_update[i]);
-  }
-  
-  // Uninstall plugins.
-  var to_uninstall = [];
-  try {
-    s = builder.plugins.db.createStatement("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_UNINSTALL + "'");
-    while (s.executeStep()) {
-      to_uninstall.push(s.row.identifier);
-    }
-  } finally { s.finalize(); }
-  for (var i = 0; i < to_uninstall.length; i++) {
-    builder.plugins.performUninstall(to_uninstall[i]);
-  }
-  
-  // Enable and disable plugins.
-  try {
-    s = builder.plugins.db.createStatement("UPDATE state SET enabledState = '" + builder.plugins.DISABLED + "' WHERE enabledState = '" + builder.plugins.TO_DISABLE + "'");
-    s.executeStep();
-  } finally { s.finalize(); }
-  try {
-    s = builder.plugins.db.createStatement("UPDATE state SET enabledState = '" + builder.plugins.ENABLED + "' WHERE enabledState = '" + builder.plugins.TO_ENABLE + "'");
-    s.executeStep();
-  } finally { s.finalize(); }
-  
-  // Load plugins
-  installeds = builder.plugins.getInstalledIDs();
-  var to_load = [];
-  for (var i = 0; i < installeds.length; i++) {
-    var state = builder.plugins.getState(installeds[i]);
-    if (state.installState == builder.plugins.INSTALLED && state.enabledState == builder.plugins.ENABLED) {
-      var info = builder.plugins.getInstalledInfo(installeds[i]);
-      if (info.builderMinVersion && !builder.plugins.checkMinVersion(info.builderMinVersion + "", builder.version)) {
-        builder.plugins.setEnabledState(installeds[i], builder.plugins.DISABLED);
-        builder.plugins.startupErrors.push(_t('plugin_disabled_builder_too_old', info.name, info.builderMinVersion, builder.version));
-        continue;
+  }, function(error) { alert("start_2 create table DB error " + error ); })
+  .then(function() {
+    dump("SB: installing bundled plugins\n");
+    // Install bundled plugins.
+    return builder.plugins.promiseLoop(builder.plugins.bundledPlugins, function(bundledPlugin, done) {
+      var id = bundledPlugin.id;
+      var version = bundledPlugin.version;
+      var isUpdate = true;
+      try {
+        isUpdate = !builder.plugins.checkMaxVersion(builder.plugins.getInstalledInfo(id).pluginVersion, version);
+      } catch (e) {
+        // Ignore
       }
-      if (info.builderMaxVersion && !builder.plugins.checkMaxVersion(info.builderMaxVersion + "", builder.version)) {
-        builder.plugins.setEnabledState(installeds[i], builder.plugins.DISABLED);
-        builder.plugins.startupErrors.push(_t('plugin_disabled_builder_too_new', info.name, info.builderMaxVersion, builder.version));
-        continue;
+      if ((!builder.plugins.pluginExists(id) || isUpdate)) {
+        var zipF = bundledPluginsDir.clone();
+        zipF.append(id + ".zip");
+        builder.plugins.performInstall(id, zipF, done);
+      } else {
+        done();
       }
-      for (var j = 0; j < info.load.length; j++) {
-        to_load.push(builder.plugins.getResourcePath(installeds[i], info.load[j]));
-      }
-    }
-  }
-  builder.loader.loadListOfScripts(to_load, callback);
+    });
+  }, function(error) { alert("start_2 install bundled plugins DB error " + error ); })
+  .then(function() {
+    dump("SB: finding new plugins to install\n");
+    // Find new plugins to install.
+    return builder.plugins.db.execute("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_INSTALL + "'");
+  }, function(error) { alert("start_2 find plugins to install DB error " + error ); })
+  .then(function(toInstall) {
+    dump("SB: installing new plugins\n");
+    return builder.plugins.promiseLoop(toInstall, function(installRow, done) {
+      builder.plugins.performInstall(installRow.getResultByIndex(0), null, done);
+    });
+  }, function(error) { alert("start_2 install DB error " + error ); })
+  .then(function() {
+    dump("SB: finding plugins to update\n");
+    // Find plugins to update.
+    return builder.plugins.db.execute("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_UPDATE + "'");
+  }, function(error) { alert("start_2 find plugins to update DB error " + error ); })
+  .then(function(toUpdate) {
+    dump("SB: updating plugins\n");
+    return builder.plugins.promiseLoop(toUpdate, function(updateRow, done) {
+      builder.plugins.performInstall(updateRow.getResultByIndex(0), null, done);
+    });
+  }, function(error) { alert("start_2 update plugins DB error " + error ); })
+  .then(function() {
+    dump("SB: finding plugins to uninstall\n");
+    // Find plugins to uninstall.
+    return builder.plugins.db.execute("SELECT identifier FROM state WHERE installState = '" + builder.plugins.TO_UNINSTALL + "'");
+  }, function(error) { alert("start_2 find plugins to uninstall DB error " + error ); })
+  .then(function(toUninstall) {
+    dump("SB: uninstalling plugins\n");
+    return builder.plugins.promiseLoop(toUninstall, function(uninstallRow, done) {
+      builder.plugins.performUninstall(uninstallRow.getResultByIndex(0), done);
+    });
+  }, function(error) { alert("start_2 uninstall DB error " + error ); })
+  .then(function() {
+    // Disable plugins.
+    dump("SB: disabling plugins\n");
+    return builder.plugins.db.execute("UPDATE state SET enabledState = '" + builder.plugins.DISABLED + "' WHERE enabledState = '" + builder.plugins.TO_DISABLE + "'");
+  }, function(error) { alert("start_2 disable DB error " + error ); })
+  .then(function() {
+    dump("SB: enabling plugins\n");
+    // Enable plugins.
+    return builder.plugins.db.execute("UPDATE state SET enabledState = '" + builder.plugins.ENABLED + "' WHERE enabledState = '" + builder.plugins.TO_ENABLE + "'");
+  }, function(error) { alert("start_2 enable DB error " + error ); })
+  .then(function() {
+    dump("SB: loading plugins\n");
+    // Load plugins
+    return new Promise(function(resolve, reject) {
+      builder.plugins.getInstalledIDs(resolve);
+    });
+  }, function(error) { alert("start_2 loadplugins DB error " + error ); }
+  ).then(function(installeds) {
+    dump("SB: checking plugin versions\n");
+    return builder.plugins.promiseLoop(installeds, function(installedID, done) {
+      builder.plugins.getState(installedID, function(state) {
+        if (state.installState == builder.plugins.INSTALLED && state.enabledState == builder.plugins.ENABLED) {
+          var info = builder.plugins.getInstalledInfo(installedID);
+          if (info.builderMinVersion && !builder.plugins.checkMinVersion(info.builderMinVersion + "", builder.version)) {
+            builder.plugins.setEnabledState(installedID, builder.plugins.DISABLED, function() {
+              builder.plugins.startupErrors.push(_t('plugin_disabled_builder_too_old', info.name, info.builderMinVersion, builder.version));
+              done();
+            });
+          } else if (info.builderMaxVersion && !builder.plugins.checkMaxVersion(info.builderMaxVersion + "", builder.version)) {
+            builder.plugins.setEnabledState(installedID, builder.plugins.DISABLED, function() {
+              builder.plugins.startupErrors.push(_t('plugin_disabled_builder_too_new', info.name, info.builderMaxVersion, builder.version));
+              done();
+            });
+          } else {
+            for (var j = 0; j < info.load.length; j++) {
+              builder.plugins.toLoad.push(builder.plugins.getResourcePath(installedID, info.load[j]));
+            }
+            done();
+          }
+        } else {
+          done();
+        }
+      });
+    });
+  }, function(error) { alert("start_2 install DB error " + error ); }
+  ).then(function() {
+    dump("SB: loading plugins\n");
+    builder.loader.loadListOfScripts(builder.plugins.toLoad, callback);
   
-  // Show any startup errors.
-  for (var i = 0; i < builder.plugins.startupErrors.length; i++) {
-    alert(builder.plugins.startupErrors[i]);
-  }
+    // Show any startup errors.
+    for (var i = 0; i < builder.plugins.startupErrors.length; i++) {
+      alert(builder.plugins.startupErrors[i]);
+    }
+  });
 };
 
 builder.plugins.shutdown = function() {
