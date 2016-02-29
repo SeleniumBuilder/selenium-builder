@@ -129,6 +129,7 @@ builder.selenium2.rcPlayback.run = function(settings, postRunCallback, jobStarte
   var browserstring = settings.browserstring;
   var browserversion = settings.browserversion;
   var platform = settings.platform;
+  var timeout = settings.timeout || 10000;
   
   var name = _t('sel2_untitled_run');
   if (r.script.path) {
@@ -159,7 +160,7 @@ builder.selenium2.rcPlayback.run = function(settings, postRunCallback, jobStarte
     JSON.stringify({"desiredCapabilities":caps}),
     builder.selenium2.rcPlayback.startJob,
     null,
-    /* timeout */ 10000);
+    timeout);
   return r;
 };
 
