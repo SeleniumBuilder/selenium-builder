@@ -610,7 +610,6 @@ texta {
   left:-86px;/* into the grey space*/
   z-index: 1000;
   width:91px;
-  box-model:border-box;
 }
 
 .b-step:hover {

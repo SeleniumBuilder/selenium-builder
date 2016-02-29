@@ -909,7 +909,7 @@ function addStep(step) {
             builder.record.continueRecording(builder.getScript().getStepIndexForID(step.id) + 1);
           }
         }),
-        newNode('a', _t('step_run'), {
+        /*newNode('a', _t('step_run'), {
           id: step.id + 'run-step',
           class: 'b-task',
           click: function() { script.seleniumVersion.playback.continueTestBetween(step.id, step.id, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback); }
@@ -925,7 +925,7 @@ function addStep(step) {
           click: function() {
             script.seleniumVersion.playback.continueTestBetween(null, step.id, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback);
           }
-        }),
+        }),*/
         newNode('a', step.breakpoint ? _t('step_remove_breakpoint') : _t('step_add_breakpoint'), {
           id: step.id + 'toggle-breakpoint',
           class: 'b-task',
@@ -1039,17 +1039,6 @@ function addStep(step) {
   jQuery('#' + step.id + '-breakpoint').click(function(e) { 
     toggleBreakpoint(step.id);    
     e.stopPropagation();
-  });
-  
-  // Prevent tasks menu from going off the bottom of the list.
-  jQuery('#' + step.id).mouseenter(function(evt) {
-    var stepEl = jQuery('#' + step.id);
-    var menu = jQuery('#' + step.id + '-b-tasks');
-    if (stepEl.position().top + menu.height() > jQuery(window).height() + jQuery(window).scrollTop()) {
-      menu.css("top", jQuery(window).height() + jQuery(window).scrollTop() - stepEl.position().top - menu.height() - 15);
-    } else {
-      menu.css("top", 2);
-    }
   });
 
   builder.stepdisplay.updateStep(step.id);
