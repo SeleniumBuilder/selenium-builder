@@ -421,8 +421,7 @@ function getHtmlXPath(node) {
         // XPath normalize-space command to ensure it will get matched correctly. Otherwise
         // links with eg newlines in them won't work. 
         if (hasNonstandardWhitespace(text)) {
-          attempt = attempt + "[normalize-space(.)='" +
-              builder.normalizeWhitespace(text) + "']";
+          attempt = attempt + "[normalize-space(.)='" + builder.normalizeWhitespace(text) + "']";
         } else {
           // (But if we can get away without it, do so!)
           attempt = attempt + "[.='" + text + "']";
