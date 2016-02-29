@@ -287,6 +287,7 @@ builder.selenium2.rcPlayback.recordError = function(r, err) {
     // If we can't connect to the server right at the start, just attach the error message to the
     // first step.
     r.currentStepIndex = 0;
+    r.currentStep = r.script.steps[0];
   } else {
     if (r.currentStep.negated && r.currentStep.type.getName().startsWith("assert")) {
       // Record this as a failed result instead - this way it will be turned into a successful result
@@ -339,7 +340,7 @@ builder.selenium2.rcPlayback.send = function(r, http_method, path, msg, callback
       if (r.stopped) { return; } // We've broken up with the server and are letting the calls go to voicemail.
       var response = "";
       if (textStatus == 'timeout') {
-        response = 'timeout';
+        response = 'No response from server. (Timeout)';
       } else {
         response = builder.selenium2.rcPlayback.parseServerResponse(xhr.responseText);
       }
