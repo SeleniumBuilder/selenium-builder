@@ -128,7 +128,8 @@ builder.views.plugins.updatePluginEntry = function(info) {
   jQuery('#' + info.identifier + '-status').text(builder.views.plugins.getStatus(info));
   
   jQuery('#' + info.identifier + '-install-and-reboot').toggle(info.installState == builder.plugins.NOT_INSTALLED && !builder.plugins.isPluginTooNew(info) && !builder.plugins.isPluginTooOld(info));
-  jQuery('#' + info.identifier + '-uninstall-and-reboot').toggle(info.installState == builder.plugins.INSTALLED);
+  // no repository info plugin has been added to plugin directory manually, and must be uninstalled also manually
+  jQuery('#' + info.identifier + '-uninstall-and-reboot').toggle(info.installState == builder.plugins.INSTALLED && info.repositoryInfo != null);
   jQuery('#' + info.identifier + '-update-and-reboot').toggle(info.installState == builder.plugins.INSTALLED && builder.plugins.isUpdateable(info) && !builder.plugins.isPluginTooNew(info) && !builder.plugins.isPluginTooOld(info));
   jQuery('#' + info.identifier + '-enable-and-reboot').toggle(info.installState == builder.plugins.INSTALLED && (info.enabledState == builder.plugins.DISABLED || info.enabledState == builder.plugins.TO_DISABLE));
   jQuery('#' + info.identifier + '-disable-and-reboot').toggle(info.installState == builder.plugins.INSTALLED && (info.enabledState == builder.plugins.ENABLED || info.enabledState == builder.plugins.TO_ENABLE));
