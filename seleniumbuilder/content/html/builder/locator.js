@@ -400,37 +400,42 @@ function getHtmlXPath(node) {
   if (nodeName === "html") {
     return "//html";
   }
-  var parent = getMyXPath(node.parentNode, window.sebuilder.getRecordingWindow().document);
+  var myPath = getMyXPath(node, window.sebuilder.getRecordingWindow().document);
 
-  if (parent.indexOf("']") > -1) {
+  var index = myPath.indexOf("']");
+  if (index > -1 && index < myPath.length - 2) {
 
+    // contains '], but it is not last characters.
     var text = node.textContent;
     // Escape ' characters.
     text = text.replace(/[']/gm, "&quot;");
 
     // Attempt to key on the text content of the node for extra precision.
     if (text && text.length < 30) {
-      var win = window.sebuilder.getRecordingWindow();
-      var attempt = parent.substr(0, parent.indexOf("']") + 2) + "//" + nodeName;
-      // If the text contains whitespace characters that aren't spaces, we convert any
-      // runs of whitespace into single spaces and trim off the ends, then use the
-      // XPath normalize-space command to ensure it will get matched correctly. Otherwise
-      // links with eg newlines in them won't work. 
-      if (hasNonstandardWhitespace(text)) {
-        attempt = attempt + "[normalize-space(.)='" +
-            builder.normalizeWhitespace(text) + "']";
-      } else {
-        // (But if we can get away without it, do so!)
-        attempt = attempt + "[.='" + text + "']";
-      }
-      // Check this actually works. 
-      if (builder.locator.locateElement(win, "xpath", attempt) === node) {
-        return attempt;
+      var parent = getMyXPath(node.parentNode, window.sebuilder.getRecordingWindow().document);
+      if (parent.indexOf("']") > -1) {
+        var win = window.bridge.getRecordingWindow();
+        var attempt = parent.substr(0, parent.indexOf("']") + 2) + "//" + nodeName;
+        // If the text contains whitespace characters that aren't spaces, we convert any
+        // runs of whitespace into single spaces and trim off the ends, then use the
+        // XPath normalize-space command to ensure it will get matched correctly. Otherwise
+        // links with eg newlines in them won't work. 
+        if (hasNonstandardWhitespace(text)) {
+          attempt = attempt + "[normalize-space(.)='" +
+              builder.normalizeWhitespace(text) + "']";
+        } else {
+          // (But if we can get away without it, do so!)
+          attempt = attempt + "[.='" + text + "']";
+        }
+        // Check this actually works. 
+        if (builder.locator.locateElement(win, "xpath", attempt) === node) {
+          return attempt;
+        }
       }
     }
   }
 
-  return parent + "/" + getChildSelector(node);
+  return myPath;
 }
 
 /** Whether the given text has non-space (0x20) whitespace). */
