@@ -135,7 +135,7 @@ builder.selenium2.Recorder.prototype = {
     if (e.type == 'dblclick') {
       this.recordStep(new builder.Step(builder.selenium2.stepTypes.doubleClickElement, locator));
     } else if (e.target.type == "checkbox") {
-      if (jQuery(e.target).attr('checked')) {
+      if (jQuery(e.target).prop('checked')) {
         this.recordStep(new builder.Step(builder.selenium2.stepTypes.setElementSelected, locator));
       } else {
         this.recordStep(new builder.Step(builder.selenium2.stepTypes.setElementNotSelected, locator));

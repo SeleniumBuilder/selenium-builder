@@ -577,7 +577,7 @@ function editType(stepID) {
   
   jQuery('#' + stepID + '-type').after(editDiv);
   if (step.negated) {
-    jQuery('#' + stepID + '-edit-negate').attr('checked', 'checked');
+    jQuery('#' + stepID + '-edit-negate').prop('checked', 'checked');
   }
   jQuery('#' + stepID + '-type').hide();
   updateTypeDivs(stepID, step.type);
@@ -596,7 +596,7 @@ function confirmTypeSelection(stepID) {
   var type = jQuery('#' + stepID + '-edit-cat-list')[0].__sb_stepType;
   if (type) {
     step.changeType(type);
-    step.negated = step.type.getNegatable() && !!(jQuery('#' + stepID + '-edit-negate').attr('checked'));
+    step.negated = step.type.getNegatable() && !!(jQuery('#' + stepID + '-edit-negate').prop('checked'));
   }
   jQuery('#' + stepID + '-edit-div').remove();
   jQuery('#' + stepID + '-type').show();

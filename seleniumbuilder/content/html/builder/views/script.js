@@ -149,14 +149,14 @@ builder.registerPostLoadHook(function() {
   
   // Toggle recording mouseovers
   jQuery('#record-do-mouseovers-label').text(_t('record_mouseovers'));
-  if (builder.doRecordMouseovers) { // TODO: Hunt down and [BAKE COOKIES FOR] whoever invented the checked attribute.
-    jQuery('#record-do-mouseovers').attr('checked', "checked");
+  if (builder.doRecordMouseovers) { // TODO: Hunt down and [BAKE COOKIES FOR] whoever invented the checked attribute, er, property, er OH GOD WHY.
+    jQuery('#record-do-mouseovers').prop('checked', "checked");
   } else {
-    jQuery('#record-do-mouseovers').removeAttr('checked');
+    jQuery('#record-do-mouseovers').prop('checked', '');
   }
   
   jQuery('#record-do-mouseovers').change(function() {
-    builder.doRecordMouseovers = !!jQuery('#record-do-mouseovers').attr('checked');
+    builder.doRecordMouseovers = !!jQuery('#record-do-mouseovers').prop('checked');
     sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.doRecordMouseovers", builder.doRecordMouseovers);
   });
 });
