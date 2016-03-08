@@ -81,25 +81,25 @@ builder.record.stop = function() {
 
 builder.record.continueRecording = function(insertionIndex) {
   jQuery('#record-panel').show();
-  
+
   if (builder.getScript().seleniumVersion == builder.selenium2) {
     jQuery('#record-do-mouseovers-div').show();
   } else {
     jQuery('#record-do-mouseovers-div').hide();
   }
-  
+
   if (insertionIndex != undefined) {
     builder.record.insertionIndex = insertionIndex;
   }
-  
+
   builder.record.lastRecordedStep = null;
-  
+
   builder.record.recorder = builder.getScript().seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
-  
+
   builder.record.recording = true;
-  
+
   builder.stepdisplay.update();
-  
+
   var isLoading = false;
   builder.record.pageLoadListener = function(url, pageloading) {
     if (pageloading) {
@@ -115,7 +115,7 @@ builder.record.continueRecording = function(insertionIndex) {
           ls.url = window.sebuilder.getRecordingWindow().location + "";
           builder.stepdisplay.update();
         }
-      
+
         builder.record.recorder = script.seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
       }
       isLoading = false;
@@ -124,7 +124,7 @@ builder.record.continueRecording = function(insertionIndex) {
   builder.pageState.addListener(builder.record.pageLoadListener);
 };
 
-builder.record.startRecording = function(urlText, seleniumVersion) {  
+builder.record.startRecording = function(urlText, seleniumVersion) {
   var anchorIndex = urlText.indexOf('#');
   if (anchorIndex !== -1) {
     urlText = urlText.substring(0, anchorIndex);
@@ -137,11 +137,10 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
     return;
   }
 
-    // Delete cookies for given URL.
-    if (false) {
-        // Not deleting cookies, modified by @hhaamm
-        builder.deleteURLCookies(url.href());
-    }
+  // Delete cookies for given URL if the option is checked
+  if (jQuery("#delete-cookies").prop("checked")) {
+    builder.deleteURLCookies(url.href());
+  }
 
   // Now load the page - both to ensure we're on the right page when we start recording
   // and to ensure that we get a clean page free of cookie influence.
@@ -155,11 +154,11 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
     } else {
       jQuery('#heading-record').removeClass('is-on');
       if (isLoading) {
-        builder.record.recording = true;    
+        builder.record.recording = true;
         builder.gui.switchView(builder.views.script);
         builder.suite.addScript(new builder.Script(seleniumVersion));
         builder.getScript().saveRequired = true;
-        builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
+        // builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
         builder.stepdisplay.update();
         builder.pageState.removeListener(builder.record.pageLoadListener);
         builder.record.continueRecording();
