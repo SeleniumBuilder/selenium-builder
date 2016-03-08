@@ -136,10 +136,13 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
     jQuery("#startup-url").focus();
     return;
   }
-    
-  // Delete cookies for given URL.
-  builder.deleteURLCookies(url.href());
-  
+
+    // Delete cookies for given URL.
+    if (false) {
+        // Not deleting cookies, modified by @hhaamm
+        builder.deleteURLCookies(url.href());
+    }
+
   // Now load the page - both to ensure we're on the right page when we start recording
   // and to ensure that we get a clean page free of cookie influence.
   // Don't show the record interface until the new page has loaded.
