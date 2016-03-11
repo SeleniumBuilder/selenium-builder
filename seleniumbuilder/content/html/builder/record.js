@@ -124,7 +124,7 @@ builder.record.continueRecording = function(insertionIndex) {
   builder.pageState.addListener(builder.record.pageLoadListener);
 };
 
-builder.record.startRecording = function(urlText, seleniumVersion) {
+builder.record.startRecording = function(urlText, seleniumVersion) {  
   var anchorIndex = urlText.indexOf('#');
   if (anchorIndex !== -1) {
     urlText = urlText.substring(0, anchorIndex);
