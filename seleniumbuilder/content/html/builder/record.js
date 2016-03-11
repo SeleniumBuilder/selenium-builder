@@ -158,7 +158,7 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
         builder.gui.switchView(builder.views.script);
         builder.suite.addScript(new builder.Script(seleniumVersion));
         builder.getScript().saveRequired = true;
-        // builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
+        builder.getScript().addStep(new builder.Step(builder.selenium2.stepTypes.get, url.href()));
         builder.stepdisplay.update();
         builder.pageState.removeListener(builder.record.pageLoadListener);
         builder.record.continueRecording();
