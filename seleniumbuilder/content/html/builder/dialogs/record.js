@@ -3,7 +3,7 @@
  * from.
  */
 builder.dialogs.record = {};
-  
+
 /** The DOM node into which to insert the dialog. */
 builder.dialogs.record.node = null;
 builder.dialogs.record.dialog = null;
@@ -41,11 +41,11 @@ builder.dialogs.record.show = function (node) {
   builder.dialogs.record.node.append(builder.dialogs.record.dialog);
   jQuery('#startup-url-2').val(builder.pageState.currentUrl);
 };
-  
+
 builder.dialogs.record.hide = function () {
   jQuery(builder.dialogs.record.dialog).remove();
 };
-  
-  
-  
+
+
+
 if (builder && builder.loader && builder.loader.loadNextMainScript) { builder.loader.loadNextMainScript(); }
