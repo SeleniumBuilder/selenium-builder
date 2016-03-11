@@ -10,7 +10,7 @@
       window.sebuilder = sebuilder;
       window.bridge = sebuilder;
       var bridge = sebuilder;
-
+      
       // Load the loader script!
       var script = document.createElement('script');
       script.setAttribute('type', 'text/javascript');
@@ -20,9 +20,9 @@
       // way too.
       document.getElementsByTagName('head')[0].appendChild(script);
     };
-
+    
     // If we haven't been told by sebuilder.boot to stay open, we are probably an orphaned window left
-    // over from the previous session, so we close.
+    // over from the previous session, so we close. 
     window.assumeDeadBy = setTimeout(function() {
       if (!window.stayAlive) {
         window.close();
@@ -40,17 +40,17 @@
 
   <div class="header">
     <ul id="menu" style="display: none;">
-
+      
     </ul>
   </div><!-- Startup screen -->
 
   <div id="startup" style="display: none">
     <h1>Selenium Builder</h1>
-
+    
     <ul id="startup-entries">
 
     </ul>
-
+    
     <div class="startrecording">
       <span id="startrecording-msg"></span>
       <p>
@@ -82,10 +82,10 @@
     <span id="plugins-loading"><span id="plugins-loading-msg"></span> <img src="img/loading.gif" /></span>
     <span id="plugins-downloading" style="display: none"><span id="plugins-downloading-msg"></span><img src="img/loading.gif" /></span>
     <ul id="plugins-list">
-
+      
     </ul>
   </div>
-
+  
   <!-- The steps -->
   <div id="steplist" style="display:none;">
     <span id="selenium-version-display" class="selenium-version-display"></span>

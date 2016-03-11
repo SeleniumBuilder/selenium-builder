@@ -81,25 +81,25 @@ builder.record.stop = function() {
 
 builder.record.continueRecording = function(insertionIndex) {
   jQuery('#record-panel').show();
-
+  
   if (builder.getScript().seleniumVersion == builder.selenium2) {
     jQuery('#record-do-mouseovers-div').show();
   } else {
     jQuery('#record-do-mouseovers-div').hide();
   }
-
+  
   if (insertionIndex != undefined) {
     builder.record.insertionIndex = insertionIndex;
   }
-
+  
   builder.record.lastRecordedStep = null;
-
+  
   builder.record.recorder = builder.getScript().seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
-
+  
   builder.record.recording = true;
-
+  
   builder.stepdisplay.update();
-
+  
   var isLoading = false;
   builder.record.pageLoadListener = function(url, pageloading) {
     if (pageloading) {
@@ -115,7 +115,7 @@ builder.record.continueRecording = function(insertionIndex) {
           ls.url = window.sebuilder.getRecordingWindow().location + "";
           builder.stepdisplay.update();
         }
-
+      
         builder.record.recorder = script.seleniumVersion.getRecorder(window.sebuilder.getRecordingWindow(), builder.record.recordStep, builder.record.getLastRecordedStep);
       }
       isLoading = false;
