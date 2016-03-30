@@ -124,7 +124,7 @@ builder.record.continueRecording = function(insertionIndex) {
   builder.pageState.addListener(builder.record.pageLoadListener);
 };
 
-builder.record.startRecording = function(urlText, seleniumVersion) {  
+builder.record.startRecording = function(urlText, seleniumVersion, deleteCookies) {  
   var anchorIndex = urlText.indexOf('#');
   if (anchorIndex !== -1) {
     urlText = urlText.substring(0, anchorIndex);
@@ -136,9 +136,9 @@ builder.record.startRecording = function(urlText, seleniumVersion) {
     jQuery("#startup-url").focus();
     return;
   }
-
+  
   // Delete cookies for given URL if the option is checked
-  if (jQuery("#delete-cookies").prop("checked")) {
+  if (deleteCookies) {
     builder.deleteURLCookies(url.href());
   }
 

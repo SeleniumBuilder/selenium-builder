@@ -22,7 +22,9 @@ builder.dialogs.record.show = function (node) {
           newNode('p', {},
             newNode('input', {type:'submit', value:_t('menu_record'), 'class':'button',
               click: function(e) {
-                builder.record.startRecording(jQuery("#startup-url-2").val(), builder.selenium2);
+                var deleteCookies = jQuery("#dialog-delete-cookies").prop("checked");
+                sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.clearCookies", deleteCookies);
+                builder.record.startRecording(jQuery("#startup-url-2").val(), builder.selenium2, deleteCookies);
                 node.html('');
               }}),
             newNode('a', _t('cancel'), {
@@ -33,8 +35,13 @@ builder.dialogs.record.show = function (node) {
                 'href': '#cancel'
             })
           ),
-          newNode('p', {'class':'cookie-warning'},
-            _t('cookie_warning')
+          newNode('p',
+            newNode('input',
+                sebuilder.prefManager.getBoolPref("extensions.seleniumbuilder3.clearCookies")
+                ? {'type': 'checkbox', 'id': 'dialog-delete-cookies', 'checked': 'checked'}
+                : {'type': 'checkbox', 'id': 'dialog-delete-cookies'}
+            ),
+            newNode('label', {'class':'cookie-warning', 'for': 'dialog-delete-cookies'}, _t('cookie_warning'))
           )
       )
   ));

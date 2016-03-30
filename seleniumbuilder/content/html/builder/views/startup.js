@@ -14,7 +14,9 @@ builder.registerPostLoadHook(function () {
   
   jQuery('#startup-start-recording-sel2-button').val(_t('menu_record'));
   jQuery('#startup-start-recording-sel2').submit(function() {
-    builder.record.startRecording(jQuery('#startup-url').val(), builder.selenium2);
+    var deleteCookies = jQuery("#delete-cookies").prop("checked");
+    sebuilder.prefManager.setBoolPref("extensions.seleniumbuilder3.clearCookies", deleteCookies);
+    builder.record.startRecording(jQuery('#startup-url').val(), builder.selenium2, deleteCookies);
   });
 });
 
@@ -33,6 +35,7 @@ builder.views.startup.show = function() {
       jQuery('#startup-plugins-hasupdates').hide();
     }
   });
+  jQuery("#delete-cookies").prop("checked", sebuilder.prefManager.getBoolPref("extensions.seleniumbuilder3.clearCookies"));
 };
 
 builder.views.startup.hide = function() {

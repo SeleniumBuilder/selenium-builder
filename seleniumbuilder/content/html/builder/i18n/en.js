@@ -14,7 +14,7 @@ m.open_script_or_suite = "Open a script or suite";
 m.view_command_table = "View supported commands for Selenium 1 & 2";
 m.manage_plugins = "Manage plugins"
 m.start_recording_at = "Start recording at";
-m.cookie_warning = "Delete all cookies for this domain: ";
+m.cookie_warning = "Delete all cookies for this domain";
 
 // Steps table
 m.steps_table = "Steps Table";

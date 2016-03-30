@@ -14,7 +14,7 @@ m.open_script_or_suite = "Ouvrir un script ou une suite";
 m.view_command_table = "Voir les commandes disponibles pour Selenium 1 & 2";
 m.manage_plugins = "Gérer les modules"
 m.start_recording_at = "Démarrer l'enregistrement depuis";
-m.cookie_warning = "Cette action va entrainer la suppression des cookies sur le domaine que vous êtes en train d'enregistrer";
+m.cookie_warning = "Suppression des cookies sur le domaine que vous êtes en train d'enregistrer";
 
 // Steps table
 m.steps_table = "Table des commandes disponibles";

@@ -13,7 +13,7 @@ m.open_script_or_suite = "Skript oder Suite öffnen";
 m.view_command_table = "Tabelle verfügbarer Schritt-Typen für Selenium 1 & 2";
 m.manage_plugins = "Plugins verwalten";
 m.start_recording_at = "Aufzeichnung beginnen auf";
-m.cookie_warning = "Achtung: Alle Cookies für diese Domain werden bei Beginn der Aufzeichnung gelöscht.";
+m.cookie_warning = "Alle Cookies für diese Domain bei Beginn der Aufzeichnung löschen";
 
 m.steps_table = "Tabelle der Schritt-Typen";
 m.step_name = "Name";

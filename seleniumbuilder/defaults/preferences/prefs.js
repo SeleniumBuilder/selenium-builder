@@ -13,5 +13,6 @@ pref("extensions.seleniumbuilder3.plugins.gotoPluginsView", false);
 pref("extensions.seleniumbuilder3.shareSuiteState", false);
 pref("extensions.seleniumbuilder3.doRecordMouseovers", false);
 pref("extensions.seleniumbuilder3.loadSavePath", "");
+pref("extensions.seleniumbuilder3.clearCookies", true);
 pref("extensions.seleniumbuilder3.getAddons.cache.enabled", false);
 pref("extensions.seleniumbuilder@sebuilder.com.getAddons.cache.enabled", false);
