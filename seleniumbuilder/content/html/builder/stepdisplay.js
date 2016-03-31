@@ -45,6 +45,102 @@ builder.registerPostLoadHook(function() {
 var openMenuID = -1;
 var reorderHandlerInstalled = false;
 
+var SPECIAL_KEYS = [
+    "NULL",
+    "CANCEL",
+    "HELP",
+    "BACK_SPACE",
+    "TAB",
+    "CLEAR",
+    "RETURN",
+    "ENTER",
+    "SHIFT",
+    "LEFT_SHIFT",
+    "CONTROL",
+    "LEFT_CONTROL",
+    "ALT",
+    "LEFT_ALT",
+    "PAUSE",
+    "ESCAPE",
+    "SPACE",
+    "PAGE_UP",
+    "PAGE_DOWN",
+    "END",
+    "HOME",
+    "LEFT",
+    "ARROW_LEFT",
+    "UP",
+    "ARROW_UP",
+    "RIGHT",
+    "ARROW_RIGHT",
+    "DOWN",
+    "ARROW_DOWN",
+    "INSERT",
+    "DELETE",
+    "SEMICOLON",
+    "EQUALS",
+    "NUMPAD0",
+    "NUMPAD1",
+    "NUMPAD2",
+    "NUMPAD3",
+    "NUMPAD4",
+    "NUMPAD5",
+    "NUMPAD6",
+    "NUMPAD7",
+    "NUMPAD8",
+    "NUMPAD9",
+    "MULTIPLY",
+    "ADD",
+    "SEPARATOR",
+    "SUBTRACT",
+    "DECIMAL",
+    "DIVIDE",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+    "META",
+    "COMMAND",
+    "ZENKAKU_HANKAKU"
+];
+
+builder.stepdisplay.specialKeysHelper = function(field_id) {
+    var helper = newNode('span', {'class': 'specialKeysHelper', 'style': 'margin: 1em;'},
+        newNode('span', {'click': function() {
+            jQuery('#' + field_id + '-specialKeysHelper').show();
+            jQuery('#' + field_id + '-specialKeysToggle').hide();
+        }, 'style': 'cursor: pointer;', 'id': field_id + '-specialKeysToggle'}, _t('special_keys_on')),
+        newNode('ul', {'id': field_id + '-specialKeysHelper', 'style': 'display: none; margin: 1em;'},
+            newNode('span', {'click': function() {
+                jQuery('#' + field_id + '-specialKeysHelper').hide();
+                jQuery('#' + field_id + '-specialKeysToggle').show();
+            }, 'style': 'cursor: pointer;'}, _t('special_keys_off'))
+        )
+    );
+    jQuery('#' + field_id).after(helper);
+    SPECIAL_KEYS.forEach(function(k) {
+        jQuery('#' + field_id + '-specialKeysHelper').append(newNode('li', {
+            'click': function() {
+                var field = jQuery('#' + field_id)[0];
+                var newText = field.value.substring(0, field.selectionStart) + '!{' + k + '}' + field.value.substring(field.selectionEnd);
+                var newSelectionStart = field.selectionStart + ('!{' + k + '}').length;
+                jQuery('#' + field_id).val(newText);
+                field.selectionStart = newSelectionStart;
+                field.selectionEnd = newSelectionStart;
+            },
+            'style': 'cursor: pointer;'
+        }, k));
+    });
+};
+
 function esc(txt) {
   txt = JSON.stringify(txt);
   return txt.substring(1, txt.length - 1);
@@ -793,6 +889,7 @@ function editParam(stepID, pIndex) {
     
     jQuery('#' + stepID + '-p' + pIndex).after(editDiv);
     jQuery('#' + stepID + '-p' + pIndex).hide();
+    builder.stepdisplay.specialKeysHelper(stepID + '-p' + pIndex + '-edit-input');
     jQuery('#' + stepID + '-p' + pIndex + '-edit-input').focus().select().keypress(function (e) {
       if (e.which == 13) {
         okf();

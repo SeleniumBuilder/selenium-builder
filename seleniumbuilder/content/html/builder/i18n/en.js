@@ -135,6 +135,8 @@ m.connecting = "Connecting...";
 m.record_verification = "Record a verification";
 m.stop_recording = "Stop recording";
 m.record_mouseovers = "Record mouseovers";
+m.special_keys_on = "Keys »";
+m.special_keys_off = "Keys «";
 
 // Convert dialog
 m.script_conversion = "Conversion";
