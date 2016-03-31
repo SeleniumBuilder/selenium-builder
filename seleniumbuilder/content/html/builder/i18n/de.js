@@ -237,6 +237,8 @@ m.playback_not_supported_warning = "Achtung: dieser Schrittyp kann nicht abgespi
 m.edit_p = "{0} ändern";
 m.not = "nicht";
 m.find = "Finden";
+m.special_keys_on = "Zeichen »";
+m.special_keys_off = "Zeichen «";
 
 // IO
 m.script_is_empty = "Skript ist leer.";
