@@ -7,7 +7,7 @@ pref("extensions.seleniumbuilder3.remote.browserstring", "firefox");
 pref("extensions.seleniumbuilder3.remote.browserversion", "");
 pref("extensions.seleniumbuilder3.remote.platform", "");
 pref("extensions.seleniumbuilder3.extensions", "");
-pref("extensions.seleniumbuilder3.plugins.repository", "http://www.sebuilder.com/repository3.json");
+pref("extensions.seleniumbuilder3.plugins.repository", "http://seleniumbuilder.github.io/se-builder/repository3.json");
 pref("extensions.seleniumbuilder3.plugins.bundledPluginsInstalled", false);
 pref("extensions.seleniumbuilder3.plugins.gotoPluginsView", false);
 pref("extensions.seleniumbuilder3.shareSuiteState", false);
