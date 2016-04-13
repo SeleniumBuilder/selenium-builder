@@ -9,7 +9,7 @@
         <em:homepageURL>http://www.sebuilder.com</em:homepageURL>
         <em:iconURL>chrome://seleniumbuilder3/content/html/img/builder-logo.png</em:iconURL>
         <em:id>seleniumbuilder@sebuilder.com</em:id>
-        <em:version>3.0.8</em:version>
+        <em:version>3.0.9</em:version>
         <em:type>2</em:type>
         <em:targetApplication>
             <Description>
