@@ -271,6 +271,73 @@ builder.selenium2.io.addLangFormatter({
    * "a" + b + "c"
    */
   escapeValue: function(stepType, value, pName) {
+    var keysMap = {
+      "NULL": "Null",
+      "CANCEL": "Cancel",
+      "HELP": "Help",
+      "BACK_SPACE": "Backspace",
+      "TAB": "Tab",
+      "CLEAR": "Clear",
+      "RETURN": "Return",
+      "ENTER": "Enter",
+      "SHIFT": "Shift",
+      "LEFT_SHIFT": "LeftShift",
+      "CONTROL": "Control",
+      "LEFT_CONTROL": "LeftControl",
+      "ALT": "Alt",
+      "LEFT_ALT": "LeftAlt",
+      "PAUSE": "Pause",
+      "ESCAPE": "Escape",
+      "SPACE": "Space",
+      "PAGE_UP": "PageUp",
+      "PAGE_DOWN": "PageDown",
+      "END": "End",
+      "HOME": "Home",
+      "LEFT": "Left",
+      "ARROW_LEFT": "ArrowLeft",
+      "UP": "Up",
+      "ARROW_UP": "ArrowUp",
+      "RIGHT": "Right",
+      "ARROW_RIGHT": "ArrowRight",
+      "DOWN": "Down",
+      "ARROW_DOWN": "ArrowDown",
+      "INSERT": "Insert",
+      "DELETE": "Delete",
+      "SEMICOLON": "Semicolon",
+      "EQUALS": "Equal", // Thanks for that gotcha, C# implementation. It's EQUALS in Java and in the spec.
+      "NUMPAD0": "NumberPad0",
+      "NUMPAD1": "NumberPad1",
+      "NUMPAD2": "NumberPad2",
+      "NUMPAD3": "NumberPad3",
+      "NUMPAD4": "NumberPad4",
+      "NUMPAD5": "NumberPad5",
+      "NUMPAD6": "NumberPad6",
+      "NUMPAD7": "NumberPad7",
+      "NUMPAD8": "NumberPad8",
+      "NUMPAD9": "NumberPad9",
+      "MULTIPLY": "Multiply",
+      "ADD": "Add",
+      "SEPARATOR": "Separator",
+      "SUBTRACT": "Subtract",
+      "DECIMAL": "Decimal",
+      "DIVIDE": "Divide",
+      "F1": "F1",
+      "F2": "F2",
+      "F3": "F3",
+      "F4": "F4",
+      "F5": "F5",
+      "F6": "F6",
+      "F7": "F7",
+      "F8": "F8",
+      "F9": "F9",
+      "F10": "F10",
+      "F11": "F11",
+      "F12": "F12",
+      "META": "Meta",
+      "COMMAND": "Command",
+      "ZENKAKU_HANKAKU": "Zenkaku_Hankaku" // This is a lie - C# just leaves this one out.
+    };
+      
     if (stepType.name.startsWith("store") && pName == "variable") { return value; }
     if (stepType.name == "switchToFrameByIndex" && pName == "index") { return value; }
     // This function takes a string literal and escapes it and wraps it in quotes.
@@ -288,6 +355,9 @@ builder.selenium2.io.addLangFormatter({
     var hasDollar = false; // Whether we've just encountered a $ character.
     var insideVar = false; // Whether we are reading in the name of a variable.
     var varName = "";      // Accumulates letters of the current variable.
+    var hasBang = false;   // Whether we've just encountered a ! character.
+    var insideKey = false; // Whether we're reading a key escape sequence.
+    var keyName = "";      // Accumulates letters of the current key.
     for (var i = 0; i < value.length; i++) {
       var ch = value.substring(i, i + 1);
       if (insideVar) {
@@ -303,8 +373,21 @@ builder.selenium2.io.addLangFormatter({
           // This letter is part of the name of the variable we're reading in.
           varName += ch;
         }
+      } else if (insideKey) {
+        if (ch == "}") {
+          // We've finished reading in the name of a key.
+          // If this isn't the start of the expression, use + to concatenate it.
+          if (output.length > 0) { output += " + "; }
+          output += "Keys." + keysMap[keyName];
+          insideKey = false;
+          hasBang = false;
+          keyName = "";
+        } else {
+          // This letter is part of the name of the key we're reading in.
+          keyName += ch;
+        }
       } else {
-        // We're not currently reading in the name of a variable.
+        // We're not currently reading in the name of a variable or key.
         if (hasDollar) {
           // But we *have* just encountered a $, so if this character is a {, we are about to
           // do a variable.
@@ -321,10 +404,29 @@ builder.selenium2.io.addLangFormatter({
             hasDollar = false;
             lastChunk += "$" + ch;
           }
+        } else if (hasBang) {
+          // But we *have* just encountered a !, so if this character is a {, we are about to
+          // do a key.
+          if (ch == "{") {
+            insideKey = true;
+            if (lastChunk.length > 0) {
+              // Add the literal we've read in to the text.
+              if (output.length > 0) { output += " + "; }
+              output += esc(lastChunk);
+            }
+            lastChunk = "";
+          }
         } else {
           // This is the "normal case" - accumulating the letters of a literal. Unless the letter
-          // is a $, in which case this may be the start of a 
-          if (ch == "$") { hasDollar = true; } else { lastChunk += ch; }
+          // is a $, in which case this may be the start of a variable. Or a !, in which case it
+          // may be part of a key.
+          if (ch == "$") {
+            hasDollar = true;
+          } else if (ch == "!") {
+            hasBang = true;
+          } else {
+            lastChunk += ch;
+          }
         }
       }
     }
