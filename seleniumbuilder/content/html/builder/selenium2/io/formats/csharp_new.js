@@ -415,6 +415,10 @@ builder.selenium2.io.addLangFormatter({
               output += esc(lastChunk);
             }
             lastChunk = "";
+          } else {
+            // No, it was just a lone !.
+            hasBang = false;
+            lastChunk += "!" + ch;
           }
         } else {
           // This is the "normal case" - accumulating the letters of a literal. Unless the letter
