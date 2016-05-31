@@ -154,7 +154,6 @@ builder.loader.mainScripts = [
   "builder/selenium2/selenium2.js",
   "builder/selenium2/io/io.js",
   "builder/selenium2/io/formats/json.js",
-  "builder/selenium2/io/formats/java.js",
   "builder/selenium2/io/formats/java_new.js",
   "builder/selenium2/io/formats/java_junit.js",
   "builder/selenium2/io/formats/java_testng.js",
