@@ -213,13 +213,16 @@ builder.selenium2.io.formats.push(builder.selenium2.io.createLangFormatter({
     var hasDollar = false; // Whether we've just encountered a $ character.
     var insideVar = false; // Whether we are reading in the name of a variable.
     var varName = "";      // Accumulates letters of the current variable.
+    var hasBang = false;   // Whether we've just encountered a ! character.
+    var insideKey = false; // Whether we're reading a key escape sequence.
+    var keyName = "";      // Accumulates letters of the current key.
     for (var i = 0; i < value.length; i++) {
       var ch = value.substring(i, i + 1);
       if (insideVar) {
         if (ch == "}") {
           // We've finished reading in the name of a variable.
           // If this isn't the start of the expression, use + to concatenate it.
-          if (output.length > 0) { output += " + "; }
+          if (output.length > 0) { output += ", "; }
           output += varName + ".inspect";
           insideVar = false;
           hasDollar = false;
@@ -227,6 +230,19 @@ builder.selenium2.io.formats.push(builder.selenium2.io.createLangFormatter({
         } else {
           // This letter is part of the name of the variable we're reading in.
           varName += ch;
+        }
+      } else if (insideKey) {
+        if (ch == "}") {
+          // We've finished reading in the name of a key.
+          // If this isn't the start of the expression, use + to concatenate it.
+          if (output.length > 0) { output += ", "; }
+          output += ":" + keyName.toLowerCase();
+          insideKey = false;
+          hasBang = false;
+          keyName = "";
+        } else {
+          // This letter is part of the name of the key we're reading in.
+          keyName += ch;
         }
       } else {
         // We're not currently reading in the name of a variable.
@@ -237,7 +253,7 @@ builder.selenium2.io.formats.push(builder.selenium2.io.createLangFormatter({
             insideVar = true;
             if (lastChunk.length > 0) {
               // Add the literal we've read in to the text.
-              if (output.length > 0) { output += " + "; }
+              if (output.length > 0) { output += ", "; }
               output += esc(lastChunk);
             }
             lastChunk = "";
@@ -246,10 +262,33 @@ builder.selenium2.io.formats.push(builder.selenium2.io.createLangFormatter({
             hasDollar = false;
             lastChunk += "$" + ch;
           }
+        } else if (hasBang) {
+          // But we *have* just encountered a !, so if this character is a {, we are about to
+          // do a key.
+          if (ch == "{") {
+            insideKey = true;
+            if (lastChunk.length > 0) {
+              // Add the literal we've read in to the text.
+              if (output.length > 0) { output += ", "; }
+              output += esc(lastChunk);
+            }
+            lastChunk = "";
+          } else {
+            // No, it was just a lone !.
+            hasBang = false;
+            lastChunk += "!" + ch;
+          }
         } else {
           // This is the "normal case" - accumulating the letters of a literal. Unless the letter
-          // is a $, in which case this may be the start of a 
-          if (ch == "$") { hasDollar = true; } else { lastChunk += ch; }
+          // is a $, in which case this may be the start of a variable. Or a !, in which case it
+          // may be part of a key.
+          if (ch == "$") {
+            hasDollar = true;
+          } else if (ch == "!") {
+            hasBang = true;
+          } else {
+            lastChunk += ch;
+          }
         }
       }
     }
