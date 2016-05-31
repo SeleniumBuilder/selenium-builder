@@ -25,6 +25,7 @@ builder.registerPostLoadHook(function() {
   jQuery('#edit-stop-rc-playback').text(_t('stop_playback'));
   jQuery('#edit-continue-local-playback').text(_t('continue_playback'));
   jQuery('#edit-continue-rc-playback').text(_t('continue_playback'));
+  jQuery('#edit-step-rc-playback').text(_t('step_playback'));
   jQuery('#edit-rc-stopping').text(_t('stopping'));
   jQuery('#edit-clearresults').text(_t('clear_results'));
   jQuery('#edit-rc-connecting-text').text(_t('connecting'));
@@ -1015,14 +1016,16 @@ function addStep(step) {
           id: step.id + 'run-from-here',
           class: 'b-task',
           click: function() { script.seleniumVersion.playback.continueTestBetween(step.id, null, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback); }
-        }),
+        }),*/
         newNode('a', _t('step_run_to_here'), {
           id: step.id + 'run-to-here',
           class: 'b-task',
           click: function() {
-            script.seleniumVersion.playback.continueTestBetween(null, step.id, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback);
+            step.tempBreakpoint = true;
+            builder.record.stopAll();
+            builder.dialogs.rc.show(jQuery("#dialog-attachment-point"), /*play all*/ false);
           }
-        }),*/
+        }),
         newNode('a', step.breakpoint ? _t('step_remove_breakpoint') : _t('step_add_breakpoint'), {
           id: step.id + 'toggle-breakpoint',
           class: 'b-task',

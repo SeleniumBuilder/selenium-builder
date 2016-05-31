@@ -88,6 +88,11 @@ builder.Script.prototype = {
       newSteps.push(this.getStepWithID(reorderedIDs[i]));
     }
     this.steps = newSteps;
+  },
+  clearTempBreakpoints: function() {
+    for (var i = 0; i < this.steps.length; i++) {
+      this.steps[i].tempBreakpoint = false;
+    }
   }
 };
 

@@ -212,6 +212,18 @@ builder.selenium2.rcPlayback.continueTests = function() {
   }
 };
 
+builder.selenium2.rcPlayback.stepTests = function() {
+  for (var i = 0; i < builder.selenium2.rcPlayback.runs.length; i++) {
+    var r = builder.selenium2.rcPlayback.runs[i];
+    if (r.pausedOnBreakpoint) {
+      if (r.currentStepIndex < r.script.steps.length - 1) {
+        r.script.steps[r.currentStepIndex + 1].tempBreakpoint = true;
+      }
+      builder.selenium2.rcPlayback.continueRun(r);
+    }
+  }
+};
+
 builder.selenium2.rcPlayback.continueRun = function(r) {
   r.pausedOnBreakpoint = false;
   r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.RUNNING, null, null);
@@ -226,8 +238,9 @@ builder.selenium2.rcPlayback.playNextStep = function(r) {
   r.currentStepIndex++;
   if (r.currentStepIndex < r.script.steps.length) {
     r.currentStep = r.script.steps[r.currentStepIndex];
-    if (builder.breakpointsEnabled && r.currentStep.breakpoint) {
+    if ((builder.breakpointsEnabled && r.currentStep.breakpoint) || r.currentStep.tempBreakpoint) {
       r.pausedOnBreakpoint = true;
+      r.currentStep.tempBreakpoint = false;
       r.stepStateCallback(r, r.script, r.currentStep, r.currentStepIndex, builder.stepdisplay.state.BREAKPOINT, null, null);
       r.pausedCallback();
       return;
@@ -245,6 +258,7 @@ builder.selenium2.rcPlayback.playNextStep = function(r) {
 
 builder.selenium2.rcPlayback.shutdown = function(r) {
   jQuery('#edit-rc-connecting').hide();
+  r.script.clearTempBreakpoints();
   r.stopped = true;
   if (!r.preserveRunSession) {
     builder.selenium2.rcPlayback.send(r, "DELETE", "", "");

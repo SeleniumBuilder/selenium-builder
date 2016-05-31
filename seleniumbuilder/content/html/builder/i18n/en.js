@@ -129,6 +129,7 @@ m.suite_cannot_save_unsaved_scripts = "Can't save suite: Save all scripts in the
 m.cannot_save_suite_due_to_mixed_versions = "Can't save suite: All scripts must be of the same Selenium version.";
 m.stop_playback = "Stop Playback";
 m.continue_playback = "Continue";
+m.step_playback = "Step";
 m.stopping = "Stopping...";
 m.clear_results = "Clear Results";
 m.connecting = "Connecting...";
