@@ -1362,7 +1362,18 @@ builder.selenium2.rcPlayback.types.switchToWindow = function(r, step) {
 };
 
 builder.selenium2.rcPlayback.types.switchToWindowByIndex = function(r, step) {
-  builder.selenium2.rcPlayback.send(r, "POST", "/window", JSON.stringify({'id': parseInt(builder.selenium2.rcPlayback.param(r, "index"))}));
+  builder.selenium2.rcPlayback.send(r, "GET", "/window/handles", "", function(r, response) {
+    var handles = response.value;
+    var index = -1;
+    try {
+      index = parseInt(builder.selenium2.rcPlayback.param(r, "index"));
+    } catch (e) {}
+    if (index == -1 || index >= handles.length) {
+      builder.selenium2.rcPlayback.recordResult(r, {success: false, message: "Window index " + builder.selenium2.rcPlayback.param(r, "index") + " not available."});
+    } else {
+      builder.selenium2.rcPlayback.send(r, "POST", "/window", JSON.stringify({'name': handles[index]}));
+    }
+  });
 };
 
 builder.selenium2.rcPlayback.types.switchToDefaultContent = function(r, step) {
