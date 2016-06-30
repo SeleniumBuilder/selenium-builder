@@ -60,6 +60,12 @@ builder.selenium2.docs = {
     },
     "description": "Switches playback to a different window, identified by its index."
   },
+  "switchToWindowByTitle": {
+    "params": {
+      "title": "The title of the window to switch to."
+    },
+    "description": "Switches playback to the first window that matches the title given."
+  },
   "switchToDefaultContent": {
     "params": {},
     "description": "Switches playback to the default/top frame."

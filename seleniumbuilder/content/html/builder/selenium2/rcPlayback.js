@@ -1376,6 +1376,29 @@ builder.selenium2.rcPlayback.types.switchToWindowByIndex = function(r, step) {
   });
 };
 
+builder.selenium2.rcPlayback.types.switchToWindowByTitle = function(r, step) {
+  builder.selenium2.rcPlayback.send(r, "GET", "/window/handles", "", function(r, response) {
+    var handles = response.value;
+    var title = builder.selenium2.rcPlayback.param(r, "title");
+    function tryHandle(handleIndex) {
+      if (handleIndex >= handles.length) {
+        builder.selenium2.rcPlayback.recordResult(r, {success: false, message: "Title " + title + " not found."});
+        return;
+      }
+      builder.selenium2.rcPlayback.send(r, "POST", "/window", JSON.stringify({'name': handles[handleIndex]}), function(r, response) {
+        builder.selenium2.rcPlayback.send(r, "GET", "/title", "", function(r, response) {
+          if (response.value == title) {
+            builder.selenium2.rcPlayback.recordResult(r, {success: true});
+          } else {
+            tryHandle(handleIndex + 1);
+          }
+        });
+      });
+    }
+    tryHandle(0);
+  });
+};
+
 builder.selenium2.rcPlayback.types.switchToDefaultContent = function(r, step) {
   builder.selenium2.rcPlayback.send(r, "POST", "/frame", JSON.stringify({'id': null}));
 };

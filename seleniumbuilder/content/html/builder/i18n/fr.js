@@ -369,6 +369,7 @@ m.step_switchToFrame = "Changer de cadre (FRAME)";
 m.step_switchToFrameByIndex = "Changer de cadre (FRAME) par index";
 m.step_switchToWindow = "Changer de fenêtre ou d'onglet";
 m.step_switchToWindowByIndex = "Changer de fenêtre ou d'onglet par index";
+m.step_switchToWindowByTitle = "Changer de fenêtre ou d'onglet par titre";
 m.step_switchToDefaultContent = "Revenir au cadre principal";
 m.step_print = "Afficher la donnée";
 m.step_store = "Affecter le texte";
