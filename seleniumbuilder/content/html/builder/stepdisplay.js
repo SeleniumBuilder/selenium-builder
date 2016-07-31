@@ -232,16 +232,20 @@ builder.stepdisplay.updateStep = function(stepID) {
   } else {
     jQuery('#' + stepID + '-unplayable').show();
   }
+  clearEditParamTasks(stepID);
+  clearParameterFields(stepID);
   for (var i = 0; i < paramNames.length; i++) {
-    jQuery('#' + stepID + 'edit-p' + i).show();
-    jQuery('#' + stepID + 'edit-p' + i + '-name').text(_t('edit_p', builder.translate.translateParamName(paramNames[i], step.type.getName())));
-    jQuery('#' + stepID + '-p' + i).show();
-    jQuery('#' + stepID + '-p' + i + '-name').text(builder.translate.translateParamName(paramNames[i], step.type.getName()));
+    addEditParamTask(stepID, i, _t('edit_p', builder.translate.translateParamName(paramNames[i], step.type.getName())));
+    
+    var paramValue = "?";
     if (step.type.getParamType(paramNames[i]) == "locator") {
-      jQuery('#' + stepID + '-p' + i + '-value').text(step[paramNames[i]].getName(script.seleniumVersion) + ": " + step[paramNames[i]].getValue());
+      paramValue = step[paramNames[i]].getName(script.seleniumVersion) + ": " + step[paramNames[i]].getValue();
     } else {
-      jQuery('#' + stepID + '-p' + i + '-value').text(esc(step[paramNames[i]]));
+      paramValue = esc(step[paramNames[i]]);
     }
+    
+    addParameterField(stepID, i, builder.translate.translateParamName(paramNames[i], step.type.getName()), paramValue);
+    
     if (paramNames.length > 1) {
       jQuery('#' + stepID + '-p' + i).css("display", "block");
     } else {
@@ -253,14 +257,7 @@ builder.stepdisplay.updateStep = function(stepID) {
       jQuery('#' + stepID + '-p' + i + '-name').hide();
     }
   }
-  // Hide the param display elements that aren't needed.
-  //Disabled this code block as params rows are now dynamically generated
-  /*
-  for (var i = paramNames.length; i < 3; i++) {
-    jQuery('#' + stepID + 'edit-p' + i).hide();
-    jQuery('#' + stepID + '-p' + i).hide();
-  }
-  */
+  
   if (step.type.getNote()) {
     jQuery('#' + stepID + '-note').show().html(step.type.getNote());
   } else {
@@ -938,191 +935,142 @@ function saveStepName(stepID) {
   jQuery('#' + stepID + '-name').html(n == "" ? (script.steps.indexOf(step) + 1) + "." : n).show();
 }
 
+function clearEditParamTasks(stepID) {
+  jQuery('#' + stepID + '-b-tasks-params').html('');
+}
+
+function addEditParamTask(stepID, paramIndex, paramName) {
+  jQuery('#' + stepID + '-b-tasks-params').append(newNode(
+    'a',
+    paramName,
+    {
+      'id': stepID + 'edit-p' + paramIndex,
+      'class': 'b-task',
+      'click': function() { editParam(stepID, paramIndex); }
+    }
+  ));
+}
+
+function clearParameterFields(stepID) {
+  jQuery('#' + stepID + '-container-params').html('');
+}
+
+function addParameterField(stepID, paramIndex, paramName, paramValue) {
+  jQuery('#' + stepID + '-container-params').append(newNode('span', {'id': stepID + '-p' + paramIndex},
+    newNode('a', paramName, {
+      'id': stepID + '-p' + paramIndex + '-name',
+      'class': 'b-param-type',
+      'click': function() { editParam(stepID, paramIndex); }
+    }),
+    newNode('a', paramValue, {
+      'id': stepID + '-p' + paramIndex + '-value',
+      'class': 'b-param',
+      'click': function() { editParam(stepID, paramIndex); }
+    })
+  ));
+}
+
 /** Adds the given step to the GUI. */
 function addStep(step) {
   var script = builder.getScript();
   var stepName = step.step_name || (script.steps.indexOf(step) + 1) + ".";
-  
-  // Create appenders
-  var appendSteps = jQuery.Deferred().done(function(stepNode) {
-    jQuery("#steps").append(stepNode);
-  });
-  
-  var appendStepNode = jQuery.Deferred().done(function(tasksNode, contentNode) {
-    var stepNodeArgs = [
-      'div', {'id': step.id,'class': 'b-step'}, 
-      tasksNode,
-      contentNode
-    ];
-    appendSteps.resolve(newNode.apply(this, stepNodeArgs));
-  });
-  
-  // Create tasks nodes
-  var tasksArgs = [
-    'span', {'id': step.id + '-b-tasks', 'class': 'b-tasks'},
-    newNode('a', _t('step_edit_type'), {
-      'id': step.id + 'edit',
-      'class': 'b-task',
-      'click': function() { editType(step.id); return false; }
-    })
-  ];
-  
-  for (var i = 0; i < Object.keys(step).length - 4; i++) {
-    tasksArgs.push(function() {
-      var pIdx = i;
-      return newNode('a', newNode('span', 'p' + pIdx, {id: step.id + 'edit-p' + pIdx + '-name'}), {
-        'id': step.id + 'edit-p' + pIdx,
-        'class': 'b-task',
-        'click': function() { editParam(step.id, pIdx); }
-      });
-    }());
-  }
-  
-  tasksArgs.push(
-    newNode('a', _t('step_delete'), {
-      'id': step.id + 'delete',
-      'class': 'b-task',
-      'click': function() { deleteStep(step.id); }
-    }),
-    newNode('a', _t('step_new_above'), {
-      'id': step.id + 'insert-above',
-      'class': 'b-task',
-      click: function() { addNewStepBefore(step.id); }
-    }),
-    newNode('a', _t('step_new_below'), {
-      'id': step.id + 'insert-below',
-      'class': 'b-task',
-      'click': function() { addNewStepAfter(step.id); }
-    }),
-    newNode('a', _t('step_copy'), {
-      'id': step.id + 'copy',
-      'class': 'b-task',
-      'click': function() { copyStep(step.id); }
-    }),
-    newNode('a', _t('step_cut'), {
-      'id': step.id + 'cut',
-      'class': 'b-task',
-      'click': function() { cutStep(step.id); }
-    }),
-    newNode('a', _t('step_paste'), {
-      'id': step.id + 'paste',
-      'class': 'b-task',
-      'click': function() { pasteStep(step.id); }
-    }),
-    newNode('a', _t('step_record_before'), {
-      'id': step.id + 'record_before',
-      'class': 'b-task',
-      'click': function() {
-        builder.record.continueRecording(builder.getScript().getStepIndexForID(step.id));
-      }
-    }),
-    newNode('a', _t('step_record_after'), {
-      'id': step.id + 'record_after',
-      'class': 'b-task',
-      'click': function() {
-        builder.record.continueRecording(builder.getScript().getStepIndexForID(step.id) + 1);
-      }
-    }),
-    /*newNode('a', _t('step_run'), {
-      id: step.id + 'run-step',
-      class: 'b-task',
-      click: function() { script.seleniumVersion.playback.continueTestBetween(step.id, step.id, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback); }
-    }),
-    newNode('a', _t('step_run_from_here'), {
-      id: step.id + 'run-from-here',
-      class: 'b-task',
-      click: function() { script.seleniumVersion.playback.continueTestBetween(step.id, null, builder.views.script.onEndLocalPlayback, builder.views.script.onStartLocalPlayback, builder.stepdisplay.updateStepPlaybackState, builder.views.script.onPauseLocalPlayback); }
-    }),*/
-    newNode('a', _t('step_run_to_here'), {
-      'id': step.id + 'run-to-here',
-      'class': 'b-task',
-      'click': function() {
-        step.tempBreakpoint = true;
-        builder.record.stopAll();
-        builder.dialogs.rc.show(jQuery("#dialog-attachment-point"), /*play all*/ false);
-      }
-    }),
-    newNode('a', step.breakpoint ? _t('step_remove_breakpoint') : _t('step_add_breakpoint'), {
-      'id': step.id + 'toggle-breakpoint',
-      'class': 'b-task',
-      'click': function() { toggleBreakpoint(step.id); }
-    })
-  );
-  
-  // Create content nodes
-  var contentArgs = [
-    'div', {'class': 'b-step-container', 'id': step.id + '-container'},
-    // Menu hamburger
-    newNode('span', {'id': step.id + '-burger', 'class': 'b-burger'}, ' '),
-    // The breakpoint marker
-    newNode('span', {
-        'id': step.id + '-breakpoint', 
-        'class':'b-step-breakpoint' + 
-                (step.breakpoint && builder.breakpointsEnabled ? ' b-step-breakpoint-set' : '') +
-                (step.breakpoint && !builder.breakpointsEnabled ? ' b-step-breakpoint-disabled' : ''),
-        'dblclick': function () { toggleBreakpoint(step.id); }
-    }),
-    // The step name
-    newNode('span', {'class':'b-step-name', 'id': step.id + '-name', 'click': function() { editStepName(step.id); }}, stepName),
-    
-    newNode('span', {'id': step.id + '-name-edit', 'style': 'display: none;'},
-      newNode('input', {'id': step.id + '-name-edit-field', 'type': 'text', 'keyup': function(e) {
-        if (e.which == 13) {
-          saveStepName(step.id);
-        }
-      }}),
-      " ",
-      newNode('a', _t('ok'), {
-        'id': step.id + '-name-edit-ok',
-        'class': 'button',
-        'click': function () { saveStepName(step.id); }
-      })
-    ),
-    // The type
-    newNode('a', step.type, {
-      'id': step.id + '-type',
-      'class':'b-method',
-      'click': function() { editType(step.id); }
-    })
-  ];
-  
-  for (var j = 0; j < Object.keys(step).length - 4; j++) {
-    contentArgs.push(
-      function() {
-        var pIdx = j;
-        return newNode('span', {id: step.id + '-p' + pIdx},
-          newNode('a', {
-            'id': step.id + '-p' + pIdx + '-name',
-            'class':'b-param-type',
-            'click': function() { editParam(step.id, pIdx); }
-          }),
-          newNode('a', '', {
-            'id': step.id + '-p' + pIdx + '-value',
-            'class':'b-param',
-            'click': function() { editParam(step.id, pIdx); }
-          })
-        )
-      }()
-    );
-  }
-  contentArgs.push(
-    // Message display
-    newNode('div', {'class': "b-step-note", 'id': step.id + '-note', style:'display: none'}), 
-    newNode('div', {'style':"width: 100px; height: 3px; background: #333333; display: none", 'id': step.id + "-progress-done"}),
-    newNode('div', {'style':"width: 0px; height: 3px; background: #bbbbbb; position: relative; top: -3px; left: 100px; display: none", 'id': step.id + "-progress-notdone"}),
-    newNode('div', {'class':"b-step-message", 'id': step.id + "-message", 'style':'display: none'}),
-    newNode('div', {'class':"b-step-error", 'id': step.id + "-error", 'style':'display: none'}),
-    newNode('div', _t('playback_not_supported_warning'), {'class':"b-step-error", 'id': step.id + "-unplayable", style:'display: none'})
-  );
-  
-  // Resolve step appender
-  appendStepNode.resolve(
-    newNode.apply(this, tasksArgs),
-    newNode(
-        'div', {'class': 'b-step-content', 'id': step.id + '-content'},
-        newNode.apply(this, contentArgs)
+  jQuery("#steps").append(
+    newNode('div', {'id': step.id, 'class': 'b-step'},
+      newNode('span', {'id': step.id + '-b-tasks', 'class': 'b-tasks'}),
+      newNode('div', {'class': 'b-step-content', 'id': step.id + '-content'},
+        newNode('div', {'class': 'b-step-container', 'id': step.id + '-container'})
+      )
     )
   );
+  
+  var addTask = function(content, idPart, onClick) {
+    jQuery('#' + step.id + '-b-tasks').append(newNode(
+      'a',
+      content,
+      {
+        'id': step.id + idPart,
+        'class': 'b-task',
+        'click': onClick
+      }
+    ));
+  };
+  
+  addTask(_t('step_edit_type'), 'edit', function() { editType(step.id); return false; });
+  jQuery('#' + step.id + '-b-tasks').append(newNode(
+    'span', '', {'id': step.id + '-b-tasks-params'}
+  ));
+  addTask(_t('step_delete'), 'delete', function() { deleteStep(step.id); });
+  addTask(_t('step_new_above'), 'insert-above', function() { addNewStepBefore(step.id); });
+  addTask(_t('step_new_below'), 'insert-below', function() { addNewStepAfter(step.id); });
+  addTask(_t('step_copy'), 'copy', function() { copyStep(step.id); });
+  addTask(_t('step_cut'), 'cut', function() { cutStep(step.id); });
+  addTask(_t('step_paste'), 'paste', function() { pasteStep(step.id); });
+  addTask(_t('step_record_before'), 'record_before', function() {
+    builder.record.continueRecording(builder.getScript().getStepIndexForID(step.id));
+  });
+  addTask(_t('step_record_after'), 'record_after', function() {
+    builder.record.continueRecording(builder.getScript().getStepIndexForID(step.id) + 1);
+  });
+  addTask(_t('step_run_to_here'), 'run-to-here', function() {
+    step.tempBreakpoint = true;
+    builder.record.stopAll();
+    builder.dialogs.rc.show(jQuery("#dialog-attachment-point"), /*play all*/ false);
+  });
+  addTask(step.breakpoint ? _t('step_remove_breakpoint') : _t('step_add_breakpoint'), 'toggle-breakpoint', function() {
+    toggleBreakpoint(step.id);
+  });
+  
+  var addContent = function(content) {
+    jQuery('#' + step.id + '-container').append(content);
+  };
+  
+  // Menu hamburger
+  addContent(newNode('span', {'id': step.id + '-burger', 'class': 'b-burger'}, ' '));
+
+  // The breakpoint marker
+  addContent(newNode('span', {
+      'id': step.id + '-breakpoint', 
+      'class': 'b-step-breakpoint' + 
+              (step.breakpoint && builder.breakpointsEnabled ? ' b-step-breakpoint-set' : '') +
+              (step.breakpoint && !builder.breakpointsEnabled ? ' b-step-breakpoint-disabled' : ''),
+      'dblclick': function () { toggleBreakpoint(step.id); }
+  }));
+
+  // The step name
+  addContent(newNode('span', {'class':'b-step-name', 'id': step.id + '-name', 'click': function() { editStepName(step.id); }}, stepName));
+  
+  // Edit name
+  addContent(newNode('span', {'id': step.id + '-name-edit', 'style': 'display: none;'},
+    newNode('input', {'id': step.id + '-name-edit-field', 'type': 'text', 'keyup': function(e) {
+      if (e.which == 13) {
+        saveStepName(step.id);
+      }
+    }}),
+    " ",
+    newNode('a', _t('ok'), {
+      'id': step.id + '-name-edit-ok',
+      'class': 'button',
+      'click': function () { saveStepName(step.id); }
+    })
+  ));
+
+  // The type
+  addContent(newNode('a', step.type, {
+    'id': step.id + '-type',
+    'class':'b-method',
+    'click': function() { editType(step.id); }
+  }));
+  
+  // Params go here
+  addContent(newNode('span', {'id': step.id + '-container-params'}));
+
+  // Message display
+  addContent(newNode('div', {'class': "b-step-note", 'id': step.id + '-note', 'style':'display: none'}));
+  addContent(newNode('div', {'style':"width: 100px; height: 3px; background: #333333; display: none", 'id': step.id + "-progress-done"}));
+  addContent(newNode('div', {'style':"width: 0px; height: 3px; background: #bbbbbb; position: relative; top: -3px; left: 100px; display: none", 'id': step.id + "-progress-notdone"}));
+  addContent(newNode('div', {'class': "b-step-message", 'id': step.id + "-message", 'style':'display: none'}));
+  addContent(newNode('div', {'class': "b-step-error", 'id': step.id + "-error", 'style':'display: none'}));
+  addContent(newNode('div', _t('playback_not_supported_warning'), {'class': "b-step-error", 'id': step.id + "-unplayable", 'style':'display: none'}));
   
   jQuery('#' + step.id + '-burger').click(function(e) {
     jQuery('.b-tasks').removeClass('b-tasks-appear');
