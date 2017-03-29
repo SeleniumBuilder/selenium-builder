@@ -1,4 +1,30 @@
-# selenium-builder
+# Selenium Builder
+
+Create Selenium tests in-browser.
+
+  * [Website](http://seleniumbuilder.com)
+  * [Install on Firefox](https://addons.mozilla.org/en-GB/firefox/addon/selenium-builder/)
+  * [Mailing List](https://groups.google.com/d/forum/se-builder)
+
+## Maintainer
+
+  * David Stark ([zarkonnen](https://github.com/Zarkonnen) - [email](mailto:zarkonnen@gmail.com))
+
+## Contributors
+
+  * David Stark ([zarkonnen](https://github.com/Zarkonnen))
+  * Mathieu Sabourin ([OniOni](https://github.com/OniOni))
+  * Adam Christian ([admc](https://github.com/admc))
+  * Bernard Kobos ([bernii](https://github.com/bernii))
+  * Felipe Knorr Kuhn ([knorrium](https://github.com/knorrium))
+  * Stephen Mc Gowan ([mcclown](https://github.com/mcclown))
+  * Jonathan Lipps ([jlipps](https://github.com/jlipps))
+  * Jérôme Kowalczyk ([jkowalczyk](https://github.com/jkowalczyk))
+  * Nick Schonning ([nschonni](https://github.com/nschonni))
+  
+Development supported by [Sauce Labs](https://saucelabs.com/).
+
+## Legacy FAQ
 
 **Wait, I thought [this](https://github.com/SeleniumBuilder/se-builder/) was Selenium Builder?**
 
